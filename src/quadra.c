@@ -132,7 +132,7 @@ void desenharQuadra(Quadra quadra, FILE* svg){
     else{
         aux = 5;
     }
-    fprintf(svg,"\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\" stroke=\"%s\"  stroke-width=\"%s\" filter=url(#shadow%d)/>\n",getX(quad->ponto),getY(quad->ponto),quad->w,quad->h,quad->corp,quad->corb,quad->espessura,aux);
+    fprintf(svg,"\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\" stroke=\"%s\"  stroke-width=\"%s\" filter=\"url(#shadow%d)\"/>\n",getX(quad->ponto),getY(quad->ponto),quad->w,quad->h,quad->corp,quad->corb,quad->espessura,aux);
     fprintf(svg,"\t<text x=\"%lf\" y=\"%lf\" >%s</text>\n", getX(quad->ponto) + quad->w/2, getY(quad->ponto) + quad->h/2, quad->cep);
 }
 

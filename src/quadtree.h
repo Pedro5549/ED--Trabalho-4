@@ -116,6 +116,9 @@ QtInfo getInfoQt(QuadTree qt, QtNo pNo);
     "pNo" deve referenciar um nó válido dentro da árvore.
  */
 
+QtInfo getInfoByIdQt(QuadTree qt, char* chave);
+// Retorna a informação armazenada na árvore associada a chave
+
 void desalocaQt(QuadTree qt);
 /**
     Libera memória alocada pela implementação da árvore. Desaloca apenas memória alocada por criaQt()) e os

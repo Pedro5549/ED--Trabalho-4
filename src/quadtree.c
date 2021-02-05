@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "quadtree.h"
 #include "lista.h"
 #include "ponto.h"
@@ -42,6 +43,25 @@ Ponto getPontoQt(QuadTree qt, QtNo pNo){
     NodeStruct* node = (NodeStruct*) pNo;
     return node->ponto;
 }
+
+QtInfo getInfoById(QuadTree qt, QtNo no, char* chave){
+    NodeStruct* node = (NodeStruct*) no;
+    QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
+    if(strcmp(quadtree->fun(getInfoQt(qt, node)), chave) == 0){
+        return getInfoQt(qt, node);
+    }
+    QtInfo aux;
+    for(int i = 0; i < 4; i++){
+        if(node->children[i] != NULL){
+            aux = getInfoById(qt,node->children[i],chave);
+            if(aux != NULL){
+                return aux;
+            }
+        }
+    }
+    return NULL;
+}
+
 
 void dentroRetanguloQt(QuadTree qt, NodeStruct* node, Lista l, double x1, double y1, double x2, double y2, void* (*fun)(void*, void*)){
     if(node == NULL){
@@ -320,6 +340,11 @@ QtNo getNoQt(QuadTree qt, double x, double y){
 QtInfo getInfoQt(QuadTree qt, QtNo pNo){
     NodeStruct* node = (NodeStruct*) pNo;
     return node->info;
+}
+
+QtInfo getInfoByIdQt(QuadTree qt, char* chave){
+    QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
+    return getInfoById(qt, quadtree->root, chave);
 }
 
 void desalocaQt(QuadTree qt){

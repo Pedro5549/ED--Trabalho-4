@@ -20,7 +20,7 @@ FILE* iniciarSvg(char filename[]){
     char* corSombra[6] = {"#FFFF00", "#FF9955", "#FF0000", "#FF00CC", "#6600FF", "#A02C5A"};
     fprintf(svg, "<svg>\n\t<defs>\n");
     for(int i = 0; i < 6; i++){
-        fprintf(svg, "\t\t<filter id=\"shadow%d\">\n\t\t\t<feDropShadow dx=\"0.2\" dy=\"0.2\" stdDeviation=\"0.2\" flood-color=\"%s\"/></filter>\n", i, corSombra[i]);
+        fprintf(svg, "\t\t<filter id=\"shadow%d\">\n\t\t\t<feDropShadow dx=\"2\" dy=\"2\" stdDeviation=\"0.2\" flood-color=\"%s\"/>\n\t\t</filter>\n", i, corSombra[i]);
     }
     fprintf(svg, "\t</defs>\n");
     return svg;
