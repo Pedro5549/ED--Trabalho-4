@@ -182,11 +182,11 @@ void percorreProfundidadeQt(QuadTree qt,funcVisita f,ExtraInfo ei){
 
 void percorreLarguraQt(QuadTree qt,funcVisita f,ExtraInfo ei){
     QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
-    Fila fila = createQueue();
     NodeStruct* aux;
     if(quadtree->root == NULL){
         return;
     }
+    Fila fila = createQueue();
     enqueue(quadtree->root, fila);
     do{
         aux = dequeue(fila);
@@ -197,6 +197,7 @@ void percorreLarguraQt(QuadTree qt,funcVisita f,ExtraInfo ei){
         }
         f(getInfoQt(quadtree, aux),ei);
     }while(!queueIsEmpty(fila));
+    free(fila);
 }
 
 QtNo insereQt(QuadTree qt,Ponto p, QtInfo pInfo){

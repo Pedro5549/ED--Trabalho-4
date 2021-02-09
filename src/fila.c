@@ -15,6 +15,7 @@ typedef struct fila{
 Fila createQueue(){
     FilaStruct* fila = (FilaStruct*)malloc(sizeof(FilaStruct));
     fila->first = NULL;
+    fila->last = NULL;
     return fila;
 }
 
