@@ -59,7 +59,7 @@ void deletaItem(HashTable t, char *chave) {
     for (No aux = getFirst(h->tabela[hashKey]); aux != NULL; aux = getNext(aux)) {
         ItemStruct *i = (ItemStruct*) getInfo(aux);
         if (strcmp(i->chave, chave) == 0) {
-            removeNode(h->tabela[hashKey], aux, 1);
+            removeNode(h->tabela[hashKey], aux, free);
             return;
         }
     }
@@ -83,7 +83,7 @@ void deletaTabela(HashTable t) {
     HashTableStruct *h = (HashTableStruct*) t;
     
     for (int i = 0; i < h->tamanho; i++) {
-        removeList(h->tabela[i], 1);
+        removeList(h->tabela[i], free);
     }
 
     if (h->tabela != NULL) {
@@ -102,7 +102,7 @@ void imprimeTabela(HashTable t) {
         No aux = getFirst(h->tabela[i]);
         while (aux != NULL) {
             ItemStruct *i = (ItemStruct*) getInfo(aux);
-            printf("%s: %s\n", i->chave, i->valor);
+            printf("%s: %s\n", (char*)i->chave, (char*)i->valor);
             aux = getNext(aux);
         }
     }

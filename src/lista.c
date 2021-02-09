@@ -109,7 +109,7 @@ void insertBefore(Lista l, No elemento, Info info){
     lista->tamanho++;
 }
 
-void removeNode(Lista l, No elemento, int flag){
+void removeNode(Lista l, No elemento, void (*desalocar)(void*)){
     ListaStruct* lista = (ListaStruct*) l;
     NodeStruct* node = (NodeStruct*) elemento;
     if(node->anterior == NULL){
@@ -122,7 +122,7 @@ void removeNode(Lista l, No elemento, int flag){
     }else{
         node->proximo->anterior = node->anterior;
     }
-    if (flag) free(getInfo(node));
+    if (desalocar != NULL) desalocar(getInfo(node));
     free(node);
     lista->tamanho--;
 }
