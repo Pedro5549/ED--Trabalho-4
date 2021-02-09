@@ -14,12 +14,13 @@
 void cv(QuadTree qt[11], int n, char cep[], char face, int num){
     Info fig;
     double x, y, h, w;
-    fig = getInfoByIdQt(qt[0],cep);
+    fig = getNodeByIdQt(qt[0],cep);
     if(fig == NULL){
         printf("Quadra nao encontrada\n");
         return;
     }
     else{
+        fig = getInfoQt(qt[0], fig);
         x = getX(getPontoQuad(fig));
         y = getY(getPontoQuad(fig));
         h = getHQuad(fig);
@@ -49,12 +50,13 @@ void soc(FILE* svg, FILE* txt, QuadTree qt[11], int k, char cep[], char face, in
     No node;
     Info fig;
     double x, y, w, h;
-    fig = getInfoByIdQt(qt[0],cep);
+    fig = getNodeByIdQt(qt[0],cep);
     if(fig == NULL) {
         printf("Quadra não encontrada.\n");
         return;
     }
     else{
+        fig = getInfoQt(qt[0], fig);
         x = getX(getPontoQuad(fig));
         y = getY(getPontoQuad(fig));
         h = getHQuad(fig);
@@ -82,7 +84,7 @@ void soc(FILE* svg, FILE* txt, QuadTree qt[11], int k, char cep[], char face, in
     int* tamanho1 = (int*)malloc(sizeof(int));;
     *tamanho1 = getTamanho(extraFig);
     fprintf(svg, "\t<rect id=\"%d\" x=\"%lf\" y=\"%lf\" width=\"10\" height=\"4\" style=\"fill:blue;stroke-width:2;stroke:white\" />\n",*tamanho1, x, y);
-    listInsert(extraFig,tamanho1);
+    listInsert(tamanho1, extraFig);
     int i = 0;
     node = getFirst(l);
     while (i < k) {
@@ -90,7 +92,7 @@ void soc(FILE* svg, FILE* txt, QuadTree qt[11], int k, char cep[], char face, in
         int* tamanho2 = (int*)malloc(sizeof(int));
         *tamanho2 = getTamanho(extraFig);
         fprintf(svg, "\t<line id=\"%d\" x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" stroke-width=\"2\" stroke-dasharray=\"5\" />\n",*tamanho2, getX(fig), getY(fig), x, y);
-        listInsert(extraFig,tamanho2);
+        listInsert(tamanho2, extraFig);
         fprintf(txt, "x: %lf y: %lf\n", getX(fig), getY(fig));
         node = getNext(node);
         i++;
@@ -112,7 +114,7 @@ void ci(FILE* svg, FILE* txt, QuadTree qt[11], double x, double y, double r, Lis
     Lista l = createList();
     Lista casos = NULL;
     aux = nosDentroCirculoQt(qt[8],x,y,r);
-    d = getDensidade(getInfoByIdQt(qt[0],getCEPCaso(getFirst(aux))));
+    d = getDensidade(getInfoQt(qt[0], getNodeByIdQt(qt[0],getCEPCaso(getFirst(aux)))));
     for(node = getFirst(aux); node != NULL; node = getNext(node)){
         fig = getInfo(node);
         ponto = getPontoCaso(fig);

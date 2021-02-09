@@ -45,16 +45,16 @@ Ponto getPontoQt(QuadTree qt, QtNo pNo){
     return node->ponto;
 }
 
-QtInfo getInfoById(QuadTree qt, QtNo no, char* chave){
+QtNo getNodeById(QuadTree qt, QtNo no, char* chave){
     NodeStruct* node = (NodeStruct*) no;
     QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
     if(strcmp(quadtree->fun(getInfoQt(qt, node)), chave) == 0){
-        return getInfoQt(qt, node);
+        return node;
     }
-    QtInfo aux;
+    QtNo aux;
     for(int i = 0; i < 4; i++){
         if(node->children[i] != NULL){
-            aux = getInfoById(qt,node->children[i],chave);
+            aux = getNodeById(qt,node->children[i],chave);
             if(aux != NULL){
                 return aux;
             }
@@ -345,9 +345,12 @@ QtInfo getInfoQt(QuadTree qt, QtNo pNo){
     return node->info;
 }
 
-QtInfo getInfoByIdQt(QuadTree qt, char* chave){
+QtNo getNodeByIdQt(QuadTree qt, char* chave){
     QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
-    return getInfoById(qt, quadtree->root, chave);
+    if(quadtree->root == NULL){
+        return NULL;
+    }
+    return getNodeById(qt, quadtree->root, chave);
 }
 
 void desalocaQt(QuadTree qt){

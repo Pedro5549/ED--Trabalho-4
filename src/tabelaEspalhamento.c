@@ -69,7 +69,7 @@ Item getValor(HashTable t, char *chave) {
     HashTableStruct *h = (HashTableStruct*) t;
     int hashKey = getChave(chave, h->tamanho);
 
-    for (No aux = getFirst(h->tabela[hashKey]); aux != NULL; aux = getNext(h->tabela[hashKey])) {
+    for (No aux = getFirst(h->tabela[hashKey]); aux != NULL; aux = getNext(aux)) {
         ItemStruct *i = (ItemStruct*) getInfo(aux);
         if (strcmp(i->chave, chave) == 0) {
             return i->valor;

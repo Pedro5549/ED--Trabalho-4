@@ -55,10 +55,10 @@ Ponto defaultGetPonto(Ponto info){
 }
 
 Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
-    No primeiro = getFirst(list), i;
-    if(primeiro == NULL){
+    if(getTamanho(list) < 3){
         return NULL;
     }
+    No primeiro = getFirst(list), i;
     Info aux = getInfo(primeiro);
     Ponto p2, p1;
 
@@ -137,7 +137,7 @@ void shellSort(Lista list, double x, double y) {
     }
 }
 
-void balancearQuadTree(QuadTree qt, Lista l, void* (*getPonto)(void*), void (*swap)(void*, void*)){
+void balancearQuadTree(QuadTree qt, Lista l, Ponto (*getPonto)(void*), void (*swap)(void*, void*)){
     if (getPonto == NULL) {
         getPonto = defaultGetPonto;
     }

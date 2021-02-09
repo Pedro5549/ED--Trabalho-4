@@ -55,59 +55,59 @@ void geo(QuadTree quadtrees[11], char geoArq[], char saida[]){
         if (strcmp(tipo,"nx") == 0){
             fscanf(geo,"%lf", &x);
             if(fgetc(geo) != '\n'){
-                fscanf(geo,"%lf %lf %lf %lf\n", &x, &y, &h, &w);
+                fscanf(geo,"%lf %lf %lf %lf", &x, &y, &h, &w);
             }
         }
         else if(strcmp(tipo,"c") == 0){
-            fscanf(geo,"%s %lf %lf %lf %s %s\n", cepid, &h, &x, &y, corb, corp);
+            fscanf(geo,"%s %lf %lf %lf %s %s", cepid, &h, &x, &y, corb, corp);
             listInsert(criarCirculo(cepid,x,y,h,cw,corp,corb), list[4]);
         }
         else if(strcmp(tipo,"r") == 0){
-            fscanf(geo,"%s %lf %lf %lf %lf %s %s\n", cepid, &w, &h, &x, &y, corb, corp);
+            fscanf(geo,"%s %lf %lf %lf %lf %s %s", cepid, &w, &h, &x, &y, corb, corp);
             listInsert(criarRetangulo(cepid,x,y,w,h,rw,corp,corb), list[5]);
         }
         else if(strcmp(tipo,"t") == 0){
-            fscanf(geo,"%s %lf %lf %s %s\n", cepid, &x, &y, corb, corp);
+            fscanf(geo,"%s %lf %lf %s %s", cepid, &x, &y, corb, corp);
             fgets(texto, 255, geo);
             listInsert(criarTexto(cepid,x,y,corp,corb,texto), list[6]);
         }
         else if(strcmp(tipo,"q") == 0){
-            fscanf(geo,"%s %lf %lf %lf %lf\n", cepid, &x, &y, &w, &h);
+            fscanf(geo,"%s %lf %lf %lf %lf", cepid, &x, &y, &w, &h);
             listInsert(criarQuadra(cepid,x,y,eq,w,h,corQP,corQB), list[0]);
         }
         else if(strcmp(tipo,"h") == 0){
-            fscanf(geo,"%s %lf %lf\n", cepid, &x, &y);
+            fscanf(geo,"%s %lf %lf", cepid, &x, &y);
             listInsert(criarInstrumento(cepid,x,y,eh,corHP,corHB), list[1]);
         }
         else if(strcmp(tipo,"s") == 0){
-            fscanf(geo,"%s %lf %lf\n", cepid, &x, &y);
+            fscanf(geo,"%s %lf %lf", cepid, &x, &y);
             listInsert(criarInstrumento(cepid,x,y,es,corSP,corSB), list[2]);
         }
         else if(strcmp(tipo,"rb") == 0){
-            fscanf(geo,"%s %lf %lf\n", cepid, &x, &y);
+            fscanf(geo,"%s %lf %lf", cepid, &x, &y);
             listInsert(criarInstrumento(cepid,x,y,er,corRP,corRB), list[3]);
         }
         else if(strcmp(tipo,"cq") == 0){
-            fscanf(geo,"%s %s %s\n", eq, corQP, corQB);
+            fscanf(geo,"%s %s %s", eq, corQP, corQB);
         }
         else if(strcmp(tipo,"ch") == 0){
-            fscanf(geo,"%s %s %s\n", eh, corHP, corHB);
+            fscanf(geo,"%s %s %s", eh, corHP, corHB);
         }
         else if(strcmp(tipo,"cs") == 0){
-            fscanf(geo,"%s %s %s\n", es, corSP, corSB);
+            fscanf(geo,"%s %s %s", es, corSP, corSB);
         }
         else if(strcmp(tipo,"cr") == 0){
-            fscanf(geo,"%s %s %s\n", er, corRP, corRB);
+            fscanf(geo,"%s %s %s", er, corRP, corRB);
         }
         else if(strcmp(tipo,"sw") == 0){
-            fscanf(geo,"%s %s\n", cw, rw);
+            fscanf(geo,"%s %s", cw, rw);
         }
         else if(strcmp(tipo, "ps") == 0) {
-            fscanf(geo, "%lf %lf\n", &x, &y);
+            fscanf(geo, "%lf %lf", &x, &y);
             listInsert(createPoint(x, y), list[7]);
         }
         else if(strcmp(tipo, "dd") == 0) {
-            fscanf(geo, "%lf %lf %lf %lf %lf\n", &x, &y, &w, &h, &d);
+            fscanf(geo, "%lf %lf %lf %lf %lf", &x, &y, &w, &h, &d);
             listInsert(criarRegiao(x, y, w, h, d), list[8]);
         }
     }
@@ -147,26 +147,22 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
     char face, tipo[5], cepid[20], aux[20], corb[22], corp[22];
     while(fscanf(consulta,"%s",tipo) != EOF){
         if(strcmp(tipo,"o?") == 0){
-            fscanf(consulta,"%d %d\n",&j,&k);
-            fprintf(saida,"%s %d %d\n",tipo,j,k);
-            sprintf(cepid,"%d",j);
-            sprintf(aux,"%d",k);
-            intersecao(svg,saida,qt,cepid,aux);
+            fscanf(consulta,"%s %s",cepid,aux);
+            fprintf(saida,"%s %s %s\n",tipo,cepid,aux);
+            intersecao(svg,saida,qt,cepid,aux,extraFig);
         }
         else if(strcmp(tipo,"i?") == 0){
-	        fscanf(consulta,"%d %lf %lf\n",&j,&x,&y);
-	        fprintf(saida,"%s %d %lf %lf\n",tipo,j,x,y);
-            sprintf(cepid,"%d",j);
-	        pontoInterno(svg,saida,qt,cepid,x,y);
+	        fscanf(consulta,"%s %lf %lf",cepid,&x,&y);
+	        fprintf(saida,"%s %s %lf %lf\n",tipo,cepid,x,y);
+	        pontoInterno(svg,saida,qt,cepid,x,y,extraFig);
         }
         else if(strcmp(tipo,"pnt") == 0){
-	        fscanf(consulta,"%d %s %s\n",&j,corb,corp);
-	        fprintf(saida,"%s %d %s %s\n",tipo,j,corb,corp);
-            sprintf(cepid,"%d",j);
+	        fscanf(consulta,"%s %s %s",cepid,corb,corp);
+	        fprintf(saida,"%s %s %s %s\n",tipo,cepid,corb,corp);
 	        pnt(saida,qt,cepid,corb,corp);
         }
         else if(strcmp(tipo,"pnt*") == 0){
-            fscanf(consulta,"%d %d %s %s\n",&j,&k,corb,corp);
+            fscanf(consulta,"%d %d %s %s",&j,&k,corb,corp);
             fprintf(saida,"%s %d %d %s %s\n",tipo,j,k,corb,corp);
             for(i = j; i <= k; i++){
                 sprintf(cepid,"%d",i);
@@ -174,13 +170,12 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
             }
         }
         else if(strcmp(tipo,"delf") == 0){
-            fscanf(consulta,"%d\n",&j);
-            fprintf(saida,"%s %d\n",tipo,j);
-            sprintf(cepid,"%d",j);
+            fscanf(consulta,"%s",cepid);
+            fprintf(saida,"%s %s\n",tipo,cepid);
             delf(saida,qt,cepid);
         }
         else if(strcmp(tipo,"delf*") == 0){
-            fscanf(consulta,"%d %d\n",&j,&k);
+            fscanf(consulta,"%d %d",&j,&k);
             fprintf(saida,"%s %d %d\n",tipo,j,k);
             for(i = j; i <= k; i++){
                 sprintf(cepid,"%d",i);
@@ -201,37 +196,37 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
             //dq;
         }
         else if(strcmp(tipo,"del") == 0){
-            fscanf(consulta,"%s\n", cepid);
+            fscanf(consulta,"%s", cepid);
             fprintf(saida,"%s %s\n",tipo,cepid);
             //del;
         }
         else if(strcmp(tipo,"cbq") == 0){
-            fscanf(consulta,"%lf %lf %lf %s\n", &x, &y ,&h, corb);
+            fscanf(consulta,"%lf %lf %lf %s", &x, &y ,&h, corb);
             fprintf(saida,"%s %lf %lf %lf %s\n", tipo, x, y ,h, corb);
             //cbq;
         }
         else if(strcmp(tipo,"crd") == 0){
-            fscanf(consulta,"%s\n", cepid);
+            fscanf(consulta,"%s", cepid);
             fprintf(saida,"%s %s\n",tipo,cepid);
             //crd;
         }
         else if(strcmp(tipo,"car") == 0){
-            fscanf(consulta,"%lf %lf %lf %lf\n", &x, &y ,&w, &h);
+            fscanf(consulta,"%lf %lf %lf %lf", &x, &y ,&w, &h);
             fprintf(saida,"%s %lf %lf %lf %lf\n", tipo, x, y, w, h);
             //car;
         }
         else if(strcmp(tipo,"cv") == 0){
-            fscanf(consulta,"%d %s %c %d\n", &i, cepid ,&face, &j);
+            fscanf(consulta,"%d %s %c %d", &i, cepid ,&face, &j);
             fprintf(saida,"%s %d %s %c %d\n",tipo, i, cepid ,face, j);
             cv(qt,i,cepid,face,j);
         }
         else if(strcmp(tipo,"soc") == 0){
-            fscanf(consulta,"%d %s %c %d\n", &i, cepid ,&face, &j);
+            fscanf(consulta,"%d %s %c %d", &i, cepid ,&face, &j);
             fprintf(saida,"%s %d %s %c %d\n",tipo, i, cepid ,face, j);
             soc(svg,saida,qt,i,cepid,face,j,extraFig);
         }
         else if(strcmp(tipo,"ci") == 0){
-            fscanf(consulta,"%lf %lf %lf\n", &x, &y, &h);
+            fscanf(consulta,"%lf %lf %lf", &x, &y, &h);
             fprintf(saida,"%s %lf %lf %lf\n",tipo, x, y, h);
             ci(svg,saida,qt,x,y,h,extraFig);
         }
