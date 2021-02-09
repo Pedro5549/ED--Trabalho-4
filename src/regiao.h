@@ -33,7 +33,10 @@ double getDRegiao(Regiao reg);
 void setDRegiao(Regiao reg, double d);
 //define a densidade da regiao
 
-void desidadeQuadras(Regiao reg, QuadTree quadras);
+void desalocarRegiao(Regiao reg);
+//desaloca a memoria utilizada para armazenar a regiao
+
+void densidadeQuadras(Regiao reg, QuadTree quadras);
 //Define a densidade das quadras da região
 
 #endif

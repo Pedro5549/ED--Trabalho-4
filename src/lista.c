@@ -22,7 +22,7 @@ Lista createList() {
     return lista;
 }
 
-void listInsert(Lista l, Info info) {
+void listInsert(Info info, Lista l) {
     ListaStruct* lista = (ListaStruct*) l;
     NodeStruct* node = (NodeStruct*) malloc(sizeof(NodeStruct));
     node->info = info;
@@ -127,15 +127,15 @@ void removeNode(Lista l, No elemento, int flag){
     lista->tamanho--;
 }
 
-void removeList(Lista l, int flag){
+void removeList(Lista l, void (*desalocar)(void*)){
     ListaStruct* lista = (ListaStruct*) l;
     NodeStruct* node = lista->primeiro;
     NodeStruct* aux;
     while(node != NULL){
         aux = node;
         node = node->proximo;
-        if(flag){
-            free(getInfo(aux));
+        if(desalocar != NULL){
+            desalocar(getInfo(aux));
         }
         free(aux);
     }

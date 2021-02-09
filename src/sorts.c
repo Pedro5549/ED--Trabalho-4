@@ -69,15 +69,8 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
             aux = getInfo(i);
         }
     }
-    // for(i = getFirst(list); i != NULL; i = getNext(i)){
-    //     printf("%s ",getCEP(getInfo(i)));
-    // }
-    // printf("\n");
     swap(getInfo(primeiro),aux);
     quickSortList(list,getNext(primeiro),getLast(list), getPonto, swap);
-    // for(i = getFirst(list); i != NULL; i = getNext(i)){
-    //     printf("%s ",getCEP(getInfo(i)));
-    // }
     int j = getTamanho(list);
     for(i = getNext(getNext(primeiro)); i != NULL; i = getNext(i)){
         p1 = getPonto(getInfo(i));
@@ -92,13 +85,13 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
     }
     Lista envConv = createList();
     for(i = primeiro, j = 0; j < 3; j++, i = getNext(i)){
-        listInsert(envConv,getPonto(getInfo(i)));
+        listInsert(getPonto(getInfo(i)), envConv);
     }
     while(i != NULL){
         while (orientacao(getInfo(getPrevious(getLast(envConv))), getInfo(getLast(envConv)), getPonto(getInfo(i))) != 1){
             removeNode(envConv,getLast(envConv), 0);
         }
-        listInsert(envConv,getPonto(getInfo(i)));
+        listInsert(getPonto(getInfo(i)), envConv);
         i = getNext(i);
     }
     return envConv;
@@ -163,7 +156,7 @@ void balancearQuadTree(QuadTree qt, Lista l, void* (*getPonto)(void*), void (*sw
                     }
                 }
             }
-            removeList(envCov,0);
+            removeList(envCov,NULL);
         }
     }while (getTamanho(l) > 3);
     for(i = getFirst(l); i != NULL; i = getNext(i)){

@@ -61,7 +61,7 @@ void desenharCasos(CasosCovid caso, FILE* svg){
     double x = getX(getPontoCaso(c));
     double y = getY(getPontoCaso(c));
     switch (getFaceCaso(c)){
-    case 's':
+    case 'n':
         y -= h;
         break;
     case 'o':

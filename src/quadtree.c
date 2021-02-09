@@ -41,6 +41,7 @@ void desalocaNos(NodeStruct* node){
 
 Ponto getPontoQt(QuadTree qt, QtNo pNo){
     NodeStruct* node = (NodeStruct*) pNo;
+    qt = qt;
     return node->ponto;
 }
 
@@ -67,12 +68,12 @@ void dentroRetanguloQt(QuadTree qt, NodeStruct* node, Lista l, double x1, double
     if(node == NULL){
         return;
     }
-    if(pontoInternoRet(node->ponto, x1, y1, x2 - x1, y2 - y1)){
+    if(pontoInternoRet(getX(node->ponto), getY(node->ponto), x1, y1, x2 - x1, y2 - y1)){
         if(fun != NULL){
-            listInsert(l,fun(qt, node));
+            listInsert(fun(qt, node),l);
         }
         else{
-            listInsert(l,node);
+            listInsert(node,l);
         }
         
     }
@@ -85,12 +86,12 @@ void dentroCirculoQt(QuadTree qt, NodeStruct* node, Lista l, double x, double y,
     if(node == NULL){
         return;
     }
-    if(pontoInternoCirc(node->ponto, x, y, r)){
+    if(pontoInternoCirc(getX(node->ponto), getY(node->ponto), x, y, r)){
         if(fun != NULL){
-            listInsert(l,fun(qt, node));
+            listInsert(fun(qt, node),l);
         }
         else{
-            listInsert(l,node);
+            listInsert(node,l);
         }
         
     }
@@ -126,7 +127,7 @@ Lista chavesDentroRetanguloQt(QuadTree qt, double x1, double y1, double x2, doub
     QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
     NodeStruct* node = quadtree->root;
     Lista l = createList();
-    dentroRetanguloQt(qt, node, l, x1, y1, x2, y2, getChaveQt);
+    dentroRetanguloQt(qt, node, l, x1, y1, x2, y2, (void*(*)(void*, void*))getChaveQt);
     return l;
 
 }
@@ -135,7 +136,7 @@ Lista chavesDentroCirculoQt(QuadTree qt,double x, double y, double r){
     QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
     NodeStruct* node = quadtree->root;
     Lista l = createList();
-    dentroCirculoQt(qt, node, l, x, y, r, getChaveQt);
+    dentroCirculoQt(qt, node, l, x, y, r, (void*(*)(void*, void*))getChaveQt);
     return l;
 }
 
@@ -339,6 +340,7 @@ QtNo getNoQt(QuadTree qt, double x, double y){
 
 QtInfo getInfoQt(QuadTree qt, QtNo pNo){
     NodeStruct* node = (NodeStruct*) pNo;
+    qt = qt;
     return node->info;
 }
 

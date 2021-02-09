@@ -62,7 +62,13 @@ void setDRegiao(Regiao reg, double d) {
     regiao->d = d;
 }
 
-void desidadeQuadras(Regiao reg, QuadTree quadras){
+void desalocarRegiao(Regiao reg){
+    RegiaoStruct* r = (RegiaoStruct*) reg;
+    free(r->ponto);
+    free(r);
+}
+
+void densidadeQuadras(Regiao reg, QuadTree quadras){
     RegiaoStruct* r = (RegiaoStruct*) reg;
     Lista list = nosDentroRetanguloQt(quadras, getX(r->ponto), getY(r->ponto), getX(r->ponto) + r->w, getY(r->ponto) + r->h);
     for(No node = getFirst(list); node != NULL; node = getNext(node)){

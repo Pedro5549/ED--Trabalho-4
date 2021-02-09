@@ -9,7 +9,7 @@ typedef void* Info;
 Lista createList();
 //Inicializa a lista
 
-void listInsert(Lista l, Info info);
+void listInsert(Info info, Lista l);
 //Insere um novo no na lista
 
 int getTamanho(Lista lista);
@@ -39,7 +39,7 @@ void insertBefore(Lista l, No elemento, Info info);
 void removeNode(Lista l, No elemento, int flag);
 //remove o no da lista
 
-void removeList(Lista l, int flag);
+void removeList(Lista l,  void (*desalocar)(void*));
 //desaloca todos os no e a lista
 
 #endif
