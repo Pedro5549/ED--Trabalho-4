@@ -74,5 +74,5 @@ void densidadeQuadras(Regiao reg, QuadTree quadras){
     for(No node = getFirst(list); node != NULL; node = getNext(node)){
         setDensidade(getInfoQt(quadras,getInfo(node)),r->d);
     }
-    removeList(list,0);
+    removeList(list,NULL);
 }

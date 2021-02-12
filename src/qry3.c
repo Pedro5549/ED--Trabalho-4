@@ -81,18 +81,18 @@ void soc(FILE* svg, FILE* txt, QuadTree qt[11], int k, char cep[], char face, in
     Lista l = createList();
     percorreLarguraQt(qt[7],listInsert,l);
     shellSort(l, x, y);
-    int* tamanho1 = (int*)malloc(sizeof(int));;
-    *tamanho1 = getTamanho(extraFig);
-    fprintf(svg, "\t<rect id=\"%d\" x=\"%lf\" y=\"%lf\" width=\"10\" height=\"4\" style=\"fill:blue;stroke-width:2;stroke:white\" />\n",*tamanho1, x, y);
-    listInsert(tamanho1, extraFig);
+    int* tamanho = (int*)malloc(sizeof(int));;
+    *tamanho = getTamanho(extraFig);
+    fprintf(svg, "\t<rect id=\"%d\" x=\"%lf\" y=\"%lf\" width=\"10\" height=\"4\" style=\"fill:blue;stroke-width:2;stroke:white\" />\n",*tamanho, x, y);
+    listInsert(tamanho, extraFig);
     int i = 0;
     node = getFirst(l);
-    while (i < k) {
+    while (i < k && node != NULL) {
         fig = getInfo(node);
-        int* tamanho2 = (int*)malloc(sizeof(int));
-        *tamanho2 = getTamanho(extraFig);
-        fprintf(svg, "\t<line id=\"%d\" x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" stroke-width=\"2\" stroke-dasharray=\"5\" />\n",*tamanho2, getX(fig), getY(fig), x, y);
-        listInsert(tamanho2, extraFig);
+        tamanho = (int*)malloc(sizeof(int));
+        *tamanho = getTamanho(extraFig);
+        fprintf(svg, "\t<line id=\"%d\" x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" stroke-width=\"2\" stroke-dasharray=\"5\" />\n",*tamanho, getX(fig), getY(fig), x, y);
+        listInsert(tamanho, extraFig);
         fprintf(txt, "x: %lf y: %lf\n", getX(fig), getY(fig));
         node = getNext(node);
         i++;
@@ -107,30 +107,34 @@ void ci(FILE* svg, FILE* txt, QuadTree qt[11], double x, double y, double r, Lis
     double d, inc, area;
     char cor[22];
     Ponto ponto;
-    Circulo c;
-    c = criarCirculo(0,x,y,r,"5px","none","green");
+    Info c;
+    c = criarCirculo("0",x,y,r,"5px","none","green");
     insereQt(qt[4],getPontoCirc(c),c);
-    Lista aux = createList();
-    Lista l = createList();
+    Lista aux;
     Lista casos = NULL;
     aux = nosDentroCirculoQt(qt[8],x,y,r);
-    d = getDensidade(getInfoQt(qt[0], getNodeByIdQt(qt[0],getCEPCaso(getFirst(aux)))));
-    for(node = getFirst(aux); node != NULL; node = getNext(node)){
-        fig = getInfo(node);
-        ponto = getPontoCaso(fig);
-        if(pontoInternoCirc(getX(ponto),getY(ponto),x,y,r)){
-            listInsert(ponto,l);
-            fprintf(txt,"X : %lf y : %lf\n", getX(ponto),getY(ponto));
-            n += getNCasos(fig);
-        }
-    }
-    removeList(aux,NULL);
-    if(getFirst(l) == NULL){
-        free(l);
+    if(getFirst(aux) == NULL){
+        removeList(aux,NULL);
         printf("Não foi encontrado casos na região\n");
         return;
     }
-    else if(getTamanho(l) > 2){
+    node = getNodeByIdQt(qt[0],getCEPCaso(getInfoQt(qt[8],getInfo(getFirst(aux)))));
+    if (node == NULL){
+        removeList(aux,NULL);
+        printf("Densidade não informada na região\n");
+        return;
+    }
+    d = getDensidade(getInfoQt(qt[0], node));
+    Lista l = createList();
+    for(node = getFirst(aux); node != NULL; node = getNext(node)){
+        fig = getInfoQt(qt[8], getInfo(node));
+        ponto = getPontoCaso(fig);
+        listInsert(ponto,l);
+        fprintf(txt,"X : %lf y : %lf\n", getX(ponto),getY(ponto));
+        n += getNCasos(fig);
+    }
+    removeList(aux,NULL);
+    if(getTamanho(l) > 2){
         casos = convexHull(l,NULL,swapPonto);
     }
     else{
@@ -174,7 +178,9 @@ void ci(FILE* svg, FILE* txt, QuadTree qt[11], double x, double y, double r, Lis
         }
     }
     else{
-        fprintf(txt,"Não é possivel obter a categoria da região, apenas um caso dentro do circulo\n");
+        fprintf(txt,"Não é possivel obter a categoria da região\n");
+        removeList(casos,NULL);
+        return;
     }
     int* tamanho = (int*)malloc(sizeof(int));
     *tamanho = getTamanho(extraFig);

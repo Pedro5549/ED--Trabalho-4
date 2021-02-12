@@ -43,12 +43,12 @@ double obterArea(Lista l){
     Info i, j;
     No node;
     for(node = getFirst(l); getNext(node) != NULL; node = getNext(node)){
-        i = getPontoCaso(getInfo(node));
-        j = getPontoCaso(getInfo(getNext(node)));
+        i = getInfo(node);
+        j = getInfo(getNext(node));
         a += getX(i) * getY(j) - getY(i) * getX(j);
     }
-    i = getPontoCaso(getInfo(node));
-    j = getPontoCaso(getInfo(getFirst(l)));
+    i = getInfo(node);
+    j = getInfo(getFirst(l));
     a += getX(i) * getY(j) - getY(i) * getX(j);
     return a/2;
 }
@@ -58,13 +58,13 @@ Ponto centroide(Lista l, double area){
     Info i, j;
     No node;
     for(node = getFirst(l); getNext(node) != NULL; node = getNext(node)){
-        i = getPontoCaso(getInfo(node));
-        j = getPontoCaso(getInfo(getNext(node)));
+        i = getInfo(node);
+        j = getInfo(getNext(node));
         x += (getX(i) + getX(j)) * getX(i) * getY(j) - getY(i) * getX(j);
         y += (getY(i) + getY(j)) * getX(i) * getY(j) - getY(i) * getX(j);
     }
-    i = getPontoCaso(getInfo(node));
-    j = getPontoCaso(getInfo(getFirst(l)));
+    i = getInfo(node);
+    j = getInfo(getFirst(l));
     x += (getX(i) + getX(j)) * getX(i) * getY(j) - getY(i) * getX(j);
     y += (getY(i) + getY(j)) * getX(i) * getY(j) - getY(i) * getX(j);
     return createPoint(x/(6 * area), y/(6 * area));

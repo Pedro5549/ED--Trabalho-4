@@ -12,9 +12,10 @@
 #include "sorts.h"
 #include "ponto.h"
 #include "qry1.h"
+#include "qry2.h"
 #include "qry3.h"
 #include "svg.h"
-
+#include "casos.h"
 
 char *obterNomeArquivo(char path[]){
     char *aux = strrchr(path,'/');
@@ -190,30 +191,30 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
                 fprintf(saida,"%s # %s %lf",tipo,cepid,h);
             }else{
                 i = 0;
-                fscanf(consulta,"%s %lf",cepid,&h);
-                fprintf(saida,"%s %s %lf",tipo,cepid,h);
+                fscanf(consulta,"%lf", &h);
+                fprintf(saida,"%s %s %lf\n",tipo,cepid,h);
             }
-            //dq;
+            dq(svg, saida, qt, i, cepid, h);
         }
         else if(strcmp(tipo,"del") == 0){
             fscanf(consulta,"%s", cepid);
             fprintf(saida,"%s %s\n",tipo,cepid);
-            //del;
+            del(svg, saida, qt, cepid, extraFig);
         }
         else if(strcmp(tipo,"cbq") == 0){
             fscanf(consulta,"%lf %lf %lf %s", &x, &y ,&h, corb);
             fprintf(saida,"%s %lf %lf %lf %s\n", tipo, x, y ,h, corb);
-            //cbq;
+            cbq(saida, qt, x, y, h, corb);
         }
-        else if(strcmp(tipo,"crd") == 0){
+        else if(strcmp(tipo,"crd?") == 0){
             fscanf(consulta,"%s", cepid);
             fprintf(saida,"%s %s\n",tipo,cepid);
-            //crd;
+            crd(saida, qt, cepid);
         }
         else if(strcmp(tipo,"car") == 0){
             fscanf(consulta,"%lf %lf %lf %lf", &x, &y ,&w, &h);
             fprintf(saida,"%s %lf %lf %lf %lf\n", tipo, x, y, w, h);
-            //car;
+            car(svg, saida, qt, x, y, w, h, extraFig);
         }
         else if(strcmp(tipo,"cv") == 0){
             fscanf(consulta,"%d %s %c %d", &i, cepid ,&face, &j);
@@ -300,7 +301,7 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     }
     saidaGeo = (char*)malloc((strlen(saida) + 5)*sizeof(char));
     sprintf(saidaGeo,"%s.svg",saida);
-    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, NULL, NULL, NULL};
+    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, getCEPCaso, NULL, NULL};
     QuadTree trees[11];
     for(i = 0; i < 11; i++){
         trees[i] = criaQt(getId[i]);

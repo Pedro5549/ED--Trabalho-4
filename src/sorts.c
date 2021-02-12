@@ -55,6 +55,9 @@ Ponto defaultGetPonto(Ponto info){
 }
 
 Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
+    if (getPonto == NULL) {
+        getPonto = defaultGetPonto;
+    }
     if(getTamanho(list) < 3){
         return NULL;
     }
@@ -76,7 +79,7 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
         p1 = getPonto(getInfo(i));
         p2 = getPonto(getInfo(getPrevious(i)));
         if(orientacao(getPonto(getInfo(primeiro)),p2,p1) == 0){
-            removeNode(list, getPrevious(i), 0);
+            removeNode(list, getPrevious(i), NULL);
             j--;
         }
     }
@@ -89,7 +92,7 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
     }
     while(i != NULL){
         while (orientacao(getInfo(getPrevious(getLast(envConv))), getInfo(getLast(envConv)), getPonto(getInfo(i))) != 1){
-            removeNode(envConv,getLast(envConv), 0);
+            removeNode(envConv,getLast(envConv), NULL);
         }
         listInsert(getPonto(getInfo(i)), envConv);
         i = getNext(i);
@@ -151,7 +154,7 @@ void balancearQuadTree(QuadTree qt, Lista l, Ponto (*getPonto)(void*), void (*sw
                 for(j = getFirst(l); j != NULL; j = getNext(j)){
                     if(getPonto(getInfo(j)) == getInfo(i)){
                         pushStack(pilha, getInfo(j));
-                        removeNode(l,j,0);
+                        removeNode(l,j,NULL);
                         break;
                     }
                 }
