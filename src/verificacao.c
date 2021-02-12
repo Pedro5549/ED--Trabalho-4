@@ -38,6 +38,20 @@ int pontoInternoRet(double x, double y, double xRet, double yRet, double w, doub
     return dx >= 0 && dx <= w && dy >= 0 && dy <= h;
 }
 
+int retInternoCirc(double xRet, double yRet, double w, double h, double x, double y, double r){
+    if(distancia(xRet,yRet,x,y) <= r && distancia(xRet + w ,yRet + h,x,y) <= r){
+        if(distancia(xRet + w, yRet,x,y) <= r && distancia(xRet, yRet + h,x,y) <= r){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int retInternoRet(double x1, double y1, double w1, double h1, double x2, double y2, double w2, double h2){
+    return x1 >= x2 && y1 >= y2 && x1 + w1 <= x2 + w2 && y1 + h1 <= y2 + h2;
+}
+
+
 double obterArea(Lista l){
     double a = 0;
     Info i, j;

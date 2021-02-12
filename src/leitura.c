@@ -194,7 +194,7 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
                 fscanf(consulta,"%lf", &h);
                 fprintf(saida,"%s %s %lf\n",tipo,cepid,h);
             }
-            dq(svg, saida, qt, i, cepid, h);
+            dq(svg, saida, qt, i, cepid, h, extraFig);
         }
         else if(strcmp(tipo,"del") == 0){
             fscanf(consulta,"%s", cepid);

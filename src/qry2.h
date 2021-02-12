@@ -4,7 +4,7 @@
 #include "quadtree.h"
 #include "lista.h"
 
-void dq(FILE *svg, FILE *txt, QuadTree quadtrees[11], int flag, char id[], double r);
+void dq(FILE *svg, FILE *txt, QuadTree quadtrees[11], int flag, char id[], double r, Lista extraFig);
 
 void del(FILE *svg, FILE *txt, QuadTree quadtrees[11], char cepid[], Lista extraFig);
 

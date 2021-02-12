@@ -9,7 +9,7 @@
 #include "ponto.h"
 #include "lista.h"
 
-void dq(FILE *svg, FILE *txt, QuadTree quadtrees[11], int flag, char id[], double r) {
+void dq(FILE *svg, FILE *txt, QuadTree quadtrees[11], int flag, char id[], double r, Lista extraFig) {
     Info info;
     Ponto p;
     Lista l;
@@ -45,19 +45,22 @@ void dq(FILE *svg, FILE *txt, QuadTree quadtrees[11], int flag, char id[], doubl
         p = getPontoQuad(info);
         h = getHQuad(info);
         w = getWQuad(info);
-
-        if (flag) {
-            fprintf(svg, "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"beige\" stroke=\"olive\" stroke-width=\"%s\" rx=\"20\"/>\n", getX(p), getY(p), w, h, getEspessuraQuad(info));
+        if(retInternoCirc(getX(p),getY(p),w,h,x,y,r)){
+            if (flag) {
+                fprintf(svg, "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"beige\" stroke=\"olive\" stroke-width=\"%s\" rx=\"20\"/>\n", getX(p), getY(p), w, h, getEspessuraQuad(info));
+            }
+    
+            fprintf(txt, "Quadra removida: %s\n", getCEP(info));
+            QtNo aux = getInfo(node);
+            info = removeNoQt(quadtrees[0], aux);
+            desalocaQuadra(info);
         }
- 
-        fprintf(txt, "Quadra removida: %s\n", getCEP(info));
-        QtNo aux = getInfo(node);
         node = getNext(node);
-        info = removeNoQt(quadtrees[0], aux);
-        desalocaQuadra(info);
     }
-
-    fprintf(svg,"\t<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"none\" stroke=\"black\"/>\n", x, y, r);
+    int *tamanho = (int*)malloc(sizeof(int));
+    *tamanho = getTamanho(extraFig);
+    listInsert(tamanho, extraFig);
+    fprintf(svg,"\t<circle id=\"%d\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"none\" stroke=\"black\"/>\n", *tamanho, x, y, r);
     fprintf(svg,"\t<circle cx=\"%lf\" cy=\"%lf\" r=\"6\" fill=\"none\" stroke=\"red\"/>\n", x, y);
     fprintf(svg,"\t<circle cx=\"%lf\" cy=\"%lf\" r=\"7\" fill=\"none\" stroke=\"blue\"/>\n", x, y);
     removeList(l, NULL);
@@ -131,8 +134,10 @@ void cbq(FILE *txt, QuadTree quadtrees[11], double x, double y, double r, char c
 
     while (node != NULL) {
         info = getInfoQt(quadtrees[0], getInfo(node));
-        setCorbQuad(info, cstrk);
-        fprintf(txt, "Quadra %s teve a cor da borda alterada\n", getCEP(info));
+        if(retInternoCirc(getX(getPontoQuad(info)),getY(getPontoQuad(info)),getWQuad(info),getHQuad(info),x,y,r)){
+            setCorbQuad(info, cstrk);
+            fprintf(txt, "Quadra %s teve a cor da borda alterada\n", getCEP(info));
+        }
         node = getNext(node);
     }
 
@@ -165,15 +170,20 @@ void crd(FILE *txt, QuadTree quadtrees[11], char cepid[]) {
         break;
     }
 
-    info = getInfoQt(quadtrees[i], getNodeByIdQt(quadtrees[i], cepid));
+    info = getNodeByIdQt(quadtrees[i], cepid);
+    if(info != NULL){
+        info = getInfoQt(quadtrees[i], info);
+        if (i == 0) {
+            p = getPontoQuad(info);
+        } else {
+            p = getPontoIU(info);
+        }
 
-    if (i == 0) {
-        p = getPontoQuad(info);
-    } else {
-        p = getPontoIU(info);
+        fprintf(txt, "%s:\n\t%s: %s  x: %lf y: %lf\n", tipo, id, cepid, getX(p), getY(p));
     }
-
-    fprintf(txt, "%s:\n\t%s: %s  x: %lf y: %lf\n", tipo, id, cepid, getX(p), getY(p));
+    else{
+        fprintf(txt, "%s %s não encontrado(a)\n", tipo, cepid);
+    }
 }
 
 void car(FILE *svg, FILE *txt, QuadTree quadtrees[11], double px, double py, double pw, double ph, Lista extraFig) {
@@ -184,7 +194,7 @@ void car(FILE *svg, FILE *txt, QuadTree quadtrees[11], double px, double py, dou
     double area = 0, a, x, y, w, h;
     int *tamanho;
 
-    l = nosDentroRetanguloQt(quadtrees[0], px, py, pw, ph);
+    l = nosDentroRetanguloQt(quadtrees[0], px, py, px + pw, py + ph);
     node = getFirst(l);
 
     while (node != NULL) {
@@ -194,13 +204,15 @@ void car(FILE *svg, FILE *txt, QuadTree quadtrees[11], double px, double py, dou
         y = getY(p);
         w = getWQuad(info);
         h = getHQuad(info);
-        a = w * h;
-        area += a;
-        tamanho = (int*)malloc(sizeof(int));
-        *tamanho = getTamanho(extraFig);
-        listInsert(tamanho, extraFig);
-        fprintf(svg, "\t<text id=\"%d\" x=\"%lf\" y=\"%lf\">Area=%lf</text>\n", *tamanho, x + w/2, y + h/2, a);
-        fprintf(txt, "CEP: %s Area: %lf\n", getCEP(info), a);
+        if(retInternoRet(x,y,w,h,px,py,pw,ph)){
+            a = w * h;
+            area += a;
+            tamanho = (int*)malloc(sizeof(int));
+            *tamanho = getTamanho(extraFig);
+            listInsert(tamanho, extraFig);
+            fprintf(svg, "\t<text id=\"%d\" x=\"%lf\" y=\"%lf\">Area=%lf</text>\n", *tamanho, x + w/2, y + h/2, a);
+            fprintf(txt, "CEP: %s Area: %lf\n", getCEP(info), a);
+        }
         node = getNext(node);
     }
     tamanho = (int*)malloc(sizeof(int));

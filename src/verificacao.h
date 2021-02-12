@@ -16,11 +16,11 @@ double menor(double n1, double n2);
 double distancia(double x1, double y1, double x2, double y2);
 //Retorna a distancia entre dois pontos
 
-int quadraInternoCirc(Quadra q, double x, double y, double r);
-//Verifica se a quadra esta inteiramente dentro do circulo de centro (x,y) e raio r;
+int retInternoCirc(double xRet, double yRet, double w, double h, double x, double y, double r);
+//Verifica se o retangulo esta inteiramente dentro do circulo de centro (x,y) e raio r;
 
-int quadraInternoRet(Quadra q, double x, double y, double w, double h);
-//Verifica se a quadra esta inteiramente dentro do retangulo de ponto (x,y), largura w e altura h;
+int retInternoRet(double x1, double y1, double w1, double h1, double x2, double y2, double w2, double h2);
+//Verifica se o retangulo esta inteiramente dentro do retangulo de ponto (x,y), largura w e altura h;
 
 int pontoInternoCirc(double x, double y, double xCirc, double yCirc, double r);
 //Verifica se o ponto esta inteiramente dentro do circulo de centro (x,y) e raio r;
