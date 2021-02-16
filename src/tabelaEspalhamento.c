@@ -10,7 +10,7 @@ typedef struct {
 } HashTableStruct;
 
 typedef struct {
-    char *chave;
+    char chave[25];
     Item valor;
 } ItemStruct;
 
@@ -22,13 +22,12 @@ HashTable iniciaTabela(int tamanho) {
 
     for (int i = 0; i < tamanho; i++) {
         h->tabela[i] = createList();
-        printf("Lista hash %d criada\n", i + 1);
     }
 
     return h;
 }
 
-int getChave(char *chave, int tamanhoHash) {
+int getChave(char chave[], int tamanhoHash) {
     int aux = 0, res;
     int tamanho = strlen(chave);
 
@@ -37,22 +36,21 @@ int getChave(char *chave, int tamanhoHash) {
     }
 
     res = aux % tamanhoHash;
-    printf("Chave gerada: %d\n", res);
     return res;
 }
 
-void adicionaItem(HashTable t, char *chave, Item valor) {
+void adicionaItem(HashTable t, char chave[], Item valor) {
     HashTableStruct *h = (HashTableStruct*) t;
     int hashKey = getChave(chave, h->tamanho);
 
     ItemStruct *item = (ItemStruct*) malloc(sizeof(ItemStruct));
-    item->chave = chave;
+    strcpy(item->chave, chave);
     item->valor = valor;
 
-    listInsert(h->tabela[hashKey], item);
+    listInsert(item, h->tabela[hashKey]);
 }
 
-void deletaItem(HashTable t, char *chave) {
+void deletaItem(HashTable t, char chave[]) {
     HashTableStruct *h = (HashTableStruct*) t;
     int hashKey = getChave(chave, h->tamanho);
 
@@ -65,7 +63,7 @@ void deletaItem(HashTable t, char *chave) {
     }
 }
 
-Item getValor(HashTable t, char *chave) {
+Item getValor(HashTable t, char chave[]) {
     HashTableStruct *h = (HashTableStruct*) t;
     int hashKey = getChave(chave, h->tamanho);
 
@@ -102,7 +100,7 @@ void imprimeTabela(HashTable t) {
         No aux = getFirst(h->tabela[i]);
         while (aux != NULL) {
             ItemStruct *i = (ItemStruct*) getInfo(aux);
-            printf("%s: %s\n", (char*)i->chave, (char*)i->valor);
+            printf("%s: %s\n", i->chave, (char*)getValor(h, i->chave));
             aux = getNext(aux);
         }
     }

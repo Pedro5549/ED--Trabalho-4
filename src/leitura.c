@@ -16,6 +16,10 @@
 #include "qry3.h"
 #include "svg.h"
 #include "casos.h"
+#include "tabelaEspalhamento.h"
+#include "Estabelecimento.h"
+#include "pessoa.h"
+#include "endereco.h"
 
 char *obterNomeArquivo(char path[]){
     char *aux = strrchr(path,'/');
@@ -25,7 +29,7 @@ char *obterNomeArquivo(char path[]){
 	return strtok(&aux[1],".");
 }
 
-void geo(QuadTree quadtrees[11], char geoArq[], char saida[]){
+void geo(QuadTree quadtrees[11], HashTable ht[4], char geoArq[], char saida[]){
     char tipo[4] ,corb[22] ,corp[22], cepid[20], texto[255];
     int i;
     double x, y, w, h, d;
@@ -43,8 +47,9 @@ void geo(QuadTree quadtrees[11], char geoArq[], char saida[]){
 	char corSB[22] = "blue";
 	char corRP[22] = "blue";
 	char corRB[22] = "blue";
-    Lista list[9];
-    for(i = 0; i < 9; i++){
+    Info info;
+    Lista list[10];
+    for(i = 0; i < 10; i++){
         list[i] = createList();
     }
     FILE* geo = fopen(geoArq,"r");
@@ -74,7 +79,9 @@ void geo(QuadTree quadtrees[11], char geoArq[], char saida[]){
         }
         else if(strcmp(tipo,"q") == 0){
             fscanf(geo,"%s %lf %lf %lf %lf", cepid, &x, &y, &w, &h);
-            listInsert(criarQuadra(cepid,x,y,eq,w,h,corQP,corQB), list[0]);
+            info = criarQuadra(cepid,x,y,eq,w,h,corQP,corQB);
+            listInsert(info, list[0]);
+            listInsert(info, list[9]);
         }
         else if(strcmp(tipo,"h") == 0){
             fscanf(geo,"%s %lf %lf", cepid, &x, &y);
@@ -117,6 +124,10 @@ void geo(QuadTree quadtrees[11], char geoArq[], char saida[]){
     for(i = 0; i < 8; i++){
         balancearQuadTree(quadtrees[i], list[i], getPonto[i], swap[i]);
     }
+    for(No node = getFirst(list[9]); node != NULL; node = getNext(node)) {
+        info = getInfo(node);
+        adicionaItem(ht[3], getCEP(info), info);
+    }
     for(No node = getFirst(list[8]); node != NULL; node = getNext(node)){
         densidadeQuadras(getInfo(node),quadtrees[0]);
     }
@@ -128,6 +139,7 @@ void geo(QuadTree quadtrees[11], char geoArq[], char saida[]){
         removeList(list[i],NULL);
     }
     removeList(list[8],desalocarRegiao);
+    removeList(list[9], NULL);
 }
 
 void qry(QuadTree qt[11], char path[], char nomeSaida[]){
@@ -241,11 +253,74 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
     removeList(extraFig,free);
 }
 
+void ec(QuadTree qt[11], HashTable ht[4], char ecArq[]) {
+    char codt[20], auxd[255], cpf[15], cnpj[19], cep[20], face, nome[30], tipo[2], *descricao;
+    int num;
+    Info info;
+    Lista list = createList();
+    FILE *ecFile = fopen(ecArq, "r");
+
+    if (ecFile == NULL) {
+        printf("\nERRO ao abrir o arquivo .ec\n");
+        exit(1);
+    }
+
+    while (fscanf(ecFile, "%s", tipo) != EOF) {
+        if(strcmp(tipo, "t") == 0) {
+            fscanf(ecFile, "%s", codt);
+            fgets(auxd, 255, ecFile);
+            descricao = (char*) malloc((strlen(auxd) + 1) * sizeof(char));
+            strcpy(descricao, auxd);
+            adicionaItem(ht[1], codt, descricao);
+        } else if(strcmp(tipo, "e") == 0) {
+            fscanf(ecFile, "%s %s %s %s %c %d %s", cnpj, cpf, codt, cep, &face, &num, nome);
+            info = getValor(ht[3], cep);
+            if (info != NULL) {
+                listInsert(createEstabelecimento(info, cnpj, cpf, nome, codt, face, num), list);
+            }
+        }
+    }
+
+    balancearQuadTree(qt[9], list, getPontoEstabelecimento, swapEstabelecimento);
+    removeList(list, NULL);
+    fclose(ecFile);
+}
+
+void pm(QuadTree qt[11], HashTable ht[4], char pmArq[]) {
+    char cpf[15], nome[20], sobrenome[20], sexo, nasc[11], cep[20], face, compl[10], tipo[2];
+    int num;
+    Info info;
+    Lista list = createList();
+    FILE *pmFile = fopen(pmArq, "r");
+
+    if (pmFile == NULL) {
+        printf("ERRO ao abrir o arquivo .pm\n");
+        exit(1);
+    }
+
+    while (fscanf(pmFile, "%s", tipo) != EOF) {
+        if(strcmp(tipo, "p") == 0) {
+            fscanf(pmFile, "%s %s %s %c %s", cpf, nome, sobrenome, &sexo, nasc);
+            info = criarPessoa(cpf, nome, sobrenome, sexo, nasc);
+            adicionaItem(ht[2], cpf, info);
+        } else if(strcmp(tipo, "m") == 0) {
+            fscanf(pmFile, "%s %s %c %d %s", cpf, cep, &face, &num, compl);
+            info = createEndereco(getValor(ht[3], cep), cpf, face, num);
+            adicionaItem(ht[0], cpf, cep);
+            listInsert(info, list);
+        }
+    }
+
+    balancearQuadTree(qt[10], list, getPontoEndereco, swapEndereco);
+    removeList(list, NULL);
+    fclose(pmFile);
+}
+
 void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], char paramEc[], char paramPm[]){
     char *geoArq = NULL;
     char *qryArq = NULL;
     char *ecArq = NULL;
-    char* pmArq = NULL;
+    char *pmArq = NULL;
     char *nomeGeo = NULL;
     char *nomeQry = NULL;
 
@@ -306,13 +381,17 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     for(i = 0; i < 11; i++){
         trees[i] = criaQt(getId[i]);
     }
-    geo(trees, geoArq,saidaGeo);
+    HashTable ht[4];
+    for (i = 0; i < 4; i++) {
+        ht[i] = iniciaTabela(1117);
+    }
+    geo(trees, ht, geoArq, saidaGeo);
     if(paramEc != NULL){
-        //chamar função para ec
+        ec(trees, ht, ecArq);
         free(ecArq);
     }
     if(paramPm != NULL){
-        //chamar função para ec
+        pm(trees, ht, pmArq);
         free(pmArq);
     }
     if (paramQry != NULL){
@@ -326,6 +405,9 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     free(geoArq);
     free(saida);
     free(saidaGeo);
+    for(i = 0; i < 4; i++) {
+        deletaTabela(ht[i]);
+    }
     for(i = 0; i < 11; i++){
         desalocaQt(trees[i]);
     }
