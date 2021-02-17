@@ -11,7 +11,7 @@ char *obterNomeArquivo(char path[]);
 void geo(QuadTree qt[11], HashTable ht[4], char geoArq[], char saida[]);
 //le o arquivo .geo e adiciona os elementos nas lsitas
 
-void qry(QuadTree qt[11], char path[], char nomeSaida[]);
+void qry(QuadTree qt[11], HashTable ht[4], char path[], char nomeSaida[]);
 //le o arquivo .qry e chama as funcoes que realizam os comandos
 
 void ec(QuadTree qt[11], HashTable ht[4], char ecArq[]);

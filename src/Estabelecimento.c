@@ -49,7 +49,7 @@ Estabelecimento createEstabelecimento(Quadra quad, char cnpj[], char cpf[], char
     return estabelecimento;
 }
 
-char* getCEPEstabelecimento(Estabelecimento estabelecimento){
+char* getCepEstabelecimento(Estabelecimento estabelecimento){
     EstabelecimentoStruct* e = (EstabelecimentoStruct*) estabelecimento;
     return e->cep;
 }

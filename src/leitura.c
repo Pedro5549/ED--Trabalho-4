@@ -14,6 +14,7 @@
 #include "qry1.h"
 #include "qry2.h"
 #include "qry3.h"
+#include "qry4.h"
 #include "svg.h"
 #include "casos.h"
 #include "tabelaEspalhamento.h"
@@ -142,7 +143,7 @@ void geo(QuadTree quadtrees[11], HashTable ht[4], char geoArq[], char saida[]){
     removeList(list[9], NULL);
 }
 
-void qry(QuadTree qt[11], char path[], char nomeSaida[]){
+void qry(QuadTree qt[11], HashTable ht[4], char path[], char nomeSaida[]){
     char* pathTxt = malloc((5 + strlen(nomeSaida))*sizeof(char));
     char* pathSvg = malloc((5 + strlen(nomeSaida))*sizeof(char));
     sprintf(pathTxt,"%s.txt",nomeSaida);
@@ -157,7 +158,7 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
     Lista extraFig = createList();
     int j,k,i;
     double x,y,h,w;
-    char face, tipo[5], cepid[20], aux[20], corb[22], corp[22];
+    char face, tipo[7], cepid[20], aux[20], corb[22], corp[22], cpf[15];
     while(fscanf(consulta,"%s",tipo) != EOF){
         if(strcmp(tipo,"o?") == 0){
             fscanf(consulta,"%s %s",cepid,aux);
@@ -243,6 +244,47 @@ void qry(QuadTree qt[11], char path[], char nomeSaida[]){
             fprintf(saida,"%s %lf %lf %lf\n",tipo, x, y, h);
             ci(svg,saida,qt,x,y,h,extraFig);
         }
+        else if(strcmp(tipo, "m?") == 0){
+            fscanf(consulta, "%s", cepid);
+            fprintf(saida, "%s %s\n", tipo, cepid);
+            // comando m?
+        }
+        else if(strcmp(tipo, "dm?") == 0){
+            fscanf(consulta, "%s", cpf);
+            fprintf(saida, "%s %s\n", tipo, cpf);
+            dm(svg, saida, ht, cpf, extraFig);
+        }
+        else if(strcmp(tipo, "de?") == 0) {
+            fscanf(consulta, "%s", aux);
+            fprintf(saida, "%s %s\n", tipo, aux);
+            de(saida, qt, aux);
+        }
+        else if(strcmp(tipo, "mud") == 0) {
+            fscanf(consulta, "%s %s %c %d %s", cpf, cepid, &face, &i, aux);
+            fprintf(saida, "%s %s %s %c %d %s\n", tipo, cpf, cepid, face, i, aux);
+            //mud();
+        }
+        else if(strcmp(tipo, "dmprbt") == 0) {
+            // ???
+        }
+        else if(strcmp(tipo, "eplg?") == 0) {
+            fscanf(consulta, "%s", aux);
+            if(strcmp(aux, "*") == 0) {
+                i = 1;
+                fscanf(consulta, "%lf %lf %lf %lf", &x, &y, &w, &h);
+                fprintf(saida, "%s * %lf %lf %lf %lf\n", tipo, x, y, w, h);
+            } else {
+                i = 0;
+                fscanf(consulta, "%lf %lf %lf %lf", &x, &y, &w, &h);
+                fprintf(saida, "%s %s %lf %lf %lf %lf\n", tipo, aux, x, y, w, h);
+            }
+            //eplg();
+        }
+        else if(strcmp(tipo, "catac") == 0) {
+            fscanf(consulta, "%lf %lf %lf", &x, &y, &w);
+            fprintf(saida, "%s %lf %lf %lf\n", tipo, x, y, w);
+            //catac();
+        }
     }
     desenharSvg(svg,qt,extraFig);
     fecharSvg(svg);
@@ -290,7 +332,9 @@ void pm(QuadTree qt[11], HashTable ht[4], char pmArq[]) {
     char cpf[15], nome[20], sobrenome[20], sexo, nasc[11], cep[20], face, compl[10], tipo[2];
     int num;
     Info info;
-    Lista list = createList();
+    Lista list[2];
+    list[0] = createList();
+    list[1] = createList();
     FILE *pmFile = fopen(pmArq, "r");
 
     if (pmFile == NULL) {
@@ -306,13 +350,18 @@ void pm(QuadTree qt[11], HashTable ht[4], char pmArq[]) {
         } else if(strcmp(tipo, "m") == 0) {
             fscanf(pmFile, "%s %s %c %d %s", cpf, cep, &face, &num, compl);
             info = createEndereco(getValor(ht[3], cep), cpf, face, num);
-            adicionaItem(ht[0], cpf, cep);
-            listInsert(info, list);
+            listInsert(info, list[0]);
+            listInsert(info, list[1]);
         }
     }
 
-    balancearQuadTree(qt[10], list, getPontoEndereco, swapEndereco);
-    removeList(list, NULL);
+    balancearQuadTree(qt[10], list[0], getPontoEndereco, swapEndereco);
+    for(No node = getFirst(list[1]); node != NULL; node = getNext(node)) {
+        info = getInfo(node);
+        adicionaItem(ht[0], getCpfEndereco(info), info);
+    }
+    removeList(list[0], NULL);
+    removeList(list[1], NULL);
     fclose(pmFile);
 }
 
@@ -376,7 +425,7 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     }
     saidaGeo = (char*)malloc((strlen(saida) + 5)*sizeof(char));
     sprintf(saidaGeo,"%s.svg",saida);
-    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, getCEPCaso, NULL, NULL};
+    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, getCEPCaso, getCnpjEstabelecimento, NULL};
     QuadTree trees[11];
     for(i = 0; i < 11; i++){
         trees[i] = criaQt(getId[i]);
@@ -398,10 +447,14 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
         nomeQry = obterNomeArquivo(paramQry);
         saidaQry = (char*)malloc((strlen(outPath) + strlen(saida) + 2)*sizeof(char));
         sprintf(saidaQry,"%s-%s",saida,nomeQry);
-        qry(trees, qryArq, saidaQry);
+        qry(trees, ht, qryArq, saidaQry);
         free(saidaQry);
         free(qryArq); 
     }
+    /*for (i = 0; i < 4; i++) {
+        imprimeTabela(ht[i]);
+        printf("\n------------------------------------\n");
+    } */
     free(geoArq);
     free(saida);
     free(saidaGeo);
