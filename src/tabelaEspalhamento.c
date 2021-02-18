@@ -14,6 +14,13 @@ typedef struct {
     Item valor;
 } ItemStruct;
 
+void desalocaValor(Item item){
+    ItemStruct *i = (ItemStruct*) item;
+    free(i->valor);
+    free(i);
+}
+
+
 HashTable iniciaTabela(int tamanho) {
     HashTableStruct *h = (HashTableStruct*) malloc(sizeof(HashTableStruct));
 
@@ -50,14 +57,15 @@ void adicionaItem(HashTable t, char chave[], Item valor) {
     listInsert(item, h->tabela[hashKey]);
 }
 
-void deletaItem(HashTable t, char chave[]) {
+void deletaItem(HashTable t, char chave[], int flag) {
     HashTableStruct *h = (HashTableStruct*) t;
     int hashKey = getChave(chave, h->tamanho);
+    void (*desaloca[2])(Item) = {free, desalocaValor};
 
     for (No aux = getFirst(h->tabela[hashKey]); aux != NULL; aux = getNext(aux)) {
         ItemStruct *i = (ItemStruct*) getInfo(aux);
         if (strcmp(i->chave, chave) == 0) {
-            removeNode(h->tabela[hashKey], aux, free);
+            removeNode(h->tabela[hashKey], aux, desaloca[flag]);
             return;
         }
     }
@@ -77,11 +85,12 @@ Item getValor(HashTable t, char chave[]) {
     return NULL;
 }
 
-void deletaTabela(HashTable t) {
+void deletaTabela(HashTable t, int flag) {
     HashTableStruct *h = (HashTableStruct*) t;
-    
+    void (*desaloca[2])(Item) = {free, desalocaValor};
+
     for (int i = 0; i < h->tamanho; i++) {
-        removeList(h->tabela[i], free);
+        removeList(h->tabela[i], desaloca[flag]);
     }
 
     if (h->tabela != NULL) {

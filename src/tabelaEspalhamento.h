@@ -30,13 +30,13 @@ int getChave(char chave[], int tamanhoHash);
 void adicionaItem(HashTable t, char chave[], Item valor);
 
 /* Função que deleta um único item da tabela */
-void deletaItem(HashTable t, char chave[]);
+void deletaItem(HashTable t, char chave[], int flag);
 
 /* Função em que dada uma chave, retorna seu respectivo valor */
 Item getValor(HashTable t, char chave[]);
 
 /* Função que deleta a tabela completamente */
-void deletaTabela(HashTable t);
+void deletaTabela(HashTable t, int flag);
 
 /* Função para debug, imprime a tabela no console */
 void imprimeTabela(HashTable t);

@@ -262,7 +262,7 @@ void qry(QuadTree qt[11], HashTable ht[4], char path[], char nomeSaida[]){
         else if(strcmp(tipo, "mud") == 0) {
             fscanf(consulta, "%s %s %c %d %s", cpf, cepid, &face, &i, aux);
             fprintf(saida, "%s %s %s %c %d %s\n", tipo, cpf, cepid, face, i, aux);
-            //mud();
+            mud(svg, saida, qt, ht, cpf, cepid, face, i, aux, extraFig);
         }
         else if(strcmp(tipo, "dmprbt") == 0) {
             // ???
@@ -349,7 +349,7 @@ void pm(QuadTree qt[11], HashTable ht[4], char pmArq[]) {
             adicionaItem(ht[2], cpf, info);
         } else if(strcmp(tipo, "m") == 0) {
             fscanf(pmFile, "%s %s %c %d %s", cpf, cep, &face, &num, compl);
-            info = createEndereco(getValor(ht[3], cep), cpf, face, num);
+            info = createEndereco(getValor(ht[3], cep), cpf, face, num, compl);
             listInsert(info, list[0]);
             listInsert(info, list[1]);
         }
@@ -425,7 +425,7 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     }
     saidaGeo = (char*)malloc((strlen(saida) + 5)*sizeof(char));
     sprintf(saidaGeo,"%s.svg",saida);
-    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, getCEPCaso, getCnpjEstabelecimento, NULL};
+    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, getCEPCaso, getCnpjEstabelecimento, getCepEndereco};
     QuadTree trees[11];
     for(i = 0; i < 11; i++){
         trees[i] = criaQt(getId[i]);
@@ -458,9 +458,10 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     free(geoArq);
     free(saida);
     free(saidaGeo);
-    for(i = 0; i < 4; i++) {
-        deletaTabela(ht[i]);
-    }
+    deletaTabela(ht[0], 0);
+    deletaTabela(ht[1], 1);
+    deletaTabela(ht[2], 1);
+    deletaTabela(ht[3], 0);
     for(i = 0; i < 11; i++){
         desalocaQt(trees[i]);
     }
