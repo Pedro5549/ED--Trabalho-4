@@ -5,6 +5,7 @@
 #include "quadra.h"
 #include "quadtree.h"
 #include "lista.h"
+#include "verificacao.h"
 
 typedef struct regiao {
     Ponto ponto;
@@ -72,7 +73,10 @@ void densidadeQuadras(Regiao reg, QuadTree quadras){
     RegiaoStruct* r = (RegiaoStruct*) reg;
     Lista list = nosDentroRetanguloQt(quadras, getX(r->ponto), getY(r->ponto), getX(r->ponto) + r->w, getY(r->ponto) + r->h);
     for(No node = getFirst(list); node != NULL; node = getNext(node)){
-        setDensidade(getInfoQt(quadras,getInfo(node)),r->d);
+        Quadra q = getInfoQt(quadras,getInfo(node));
+        if(retInternoRet(getX(getPontoQuad(q)), getY(getPontoQuad(q)), getWQuad(q), getHQuad(q), getX(r->ponto), getY(r->ponto), r->w, r->h)){
+            setDensidade(q,r->d);
+        }
     }
     removeList(list,NULL);
 }
