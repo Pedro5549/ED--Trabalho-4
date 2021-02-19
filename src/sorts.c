@@ -74,20 +74,22 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
     }
     swap(getInfo(primeiro),aux);
     quickSortList(list,getNext(primeiro),getLast(list), getPonto, swap);
-    int j = getTamanho(list);
+    Lista lAux = createList();
+    listInsert(getInfo(primeiro),lAux);
     for(i = getNext(getNext(primeiro)); i != NULL; i = getNext(i)){
         p1 = getPonto(getInfo(i));
         p2 = getPonto(getInfo(getPrevious(i)));
-        if(orientacao(getPonto(getInfo(primeiro)),p2,p1) == 0){
-            removeNode(list, getPrevious(i), NULL);
-            j--;
+        if(orientacao(getPonto(getInfo(primeiro)),p2,p1) != 0){
+            listInsert(getInfo(getPrevious(i)), lAux);
         }
     }
+    listInsert(getInfo(getLast(list)), lAux);
+    int j = getTamanho(lAux);
     if (j < 3){
         return NULL;
     }
     Lista envConv = createList();
-    for(i = primeiro, j = 0; j < 3; j++, i = getNext(i)){
+    for(i = getFirst(lAux), j = 0; j < 3; j++, i = getNext(i)){
         listInsert(getPonto(getInfo(i)), envConv);
     }
     while(i != NULL){
@@ -97,6 +99,7 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
         listInsert(getPonto(getInfo(i)), envConv);
         i = getNext(i);
     }
+    removeList(lAux, NULL);
     return envConv;
 }
 
