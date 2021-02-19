@@ -47,9 +47,9 @@ int getNCasos(CasosCovid caso){
     return c->n;
 }
 
-void swapCasos(CasosCovid *p1, CasosCovid *p2){  
-    EnderecoStruct* a = (EnderecoStruct*) p1;
-    EnderecoStruct* b = (EnderecoStruct*) p2;
+void swapCasos(CasosCovid c1, CasosCovid c2){  
+    EnderecoStruct* a = (EnderecoStruct*) c1;
+    EnderecoStruct* b = (EnderecoStruct*) c2;
     EnderecoStruct temp = *a;  
     *a = *b;  
     *b = temp;  

@@ -129,4 +129,7 @@ void desalocaQt(QuadTree qt);
     um apontador para ela. Neste caso, esta memória não será desalocada.
  */
 
+void desenharQt(QuadTree qt, FILE* svg);
+//Desenha a quadtree em um arquivo svg
+
 #endif // QUADTREE_H_INCLUDED

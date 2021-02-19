@@ -10,6 +10,8 @@
 #define ne 1
 #define sw 2
 #define se 3
+#define dx 250
+#define dy 250
 
 typedef struct node{
     struct node *children[4];
@@ -282,19 +284,20 @@ QtInfo removeNoQt(QuadTree qt,QtNo pNo){
     }
     else{
         for(i = 0; i < 4; i++){
+            if(node->parent->children[i] == node){
+                node->parent->children[i] = NULL;
+                break;
+            }
+        }
+        for(i = 0; i < 4; i++){
             if(node->children[i] != NULL){
                 if(node->parent->children[i] == NULL){
                     node->parent->children[i] = node->children[i];
+                    node->children[i]->parent = node->parent;
                 }
                 else{
                     enqueue(node->children[i], fila);
                 }
-            }
-        }
-        for(i = 0; i < 4; i++){
-            if(node->parent->children[i] == node){
-                node->parent->children[i] = NULL;
-                break;
             }
         }
     }
@@ -360,4 +363,40 @@ void desalocaQt(QuadTree qt){
     QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
     desalocaNos(quadtree->root);
     free(qt);
+}
+
+void desenhaNosQt(QuadtreeStruct* qt, NodeStruct* no, FILE* svg, double *x, double y, Lista ant){
+    if(no == NULL){
+        return;
+    }
+    Lista atual = createList();
+    for(int i = 0; i < 2; i++){
+        desenhaNosQt(qt, no->children[i], svg, x, y + dy, atual);
+    }
+    *x += dx;
+    double aux = *x;
+    fprintf(svg, "<rect x='%lf' y='%lf' width='240' height='12' fill='none' stroke='blue' />\n",aux, y - 10);
+    fprintf(svg, "\t<text x=\"%lf\" y=\"%lf\">%s: %lf,%lf</text>\n",aux, y, qt->fun(getInfoQt(qt, no)), getX(no->ponto), getY(no->ponto));
+    if(ant != NULL){
+        listInsert(createPoint(aux,y - 10), ant);
+    }
+    else{
+        fprintf(svg, "\t<circle cx=\"%lf\" cy=\"%lf\" r=\"5\" fill=\"blue\"/>\n", aux, y - 150);
+        fprintf(svg, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" style=\"stroke: blue; stroke-width: 1\" />\n", aux, y + 2, aux, y - 150);
+    }
+    for(int i = 2; i < 4; i++){
+        desenhaNosQt(qt, no->children[i], svg, x, y + dy, atual);
+    }
+    for(No node = getFirst(atual); node != NULL; node = getNext(node)){
+        fprintf(svg, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" style=\"stroke: blue; stroke-width: 1\" />\n", aux, y + 2, getX(getInfo(node)), getY(getInfo(node)));
+    }
+    removeList(atual,free);
+}
+
+void desenharQt(QuadTree qt, FILE* svg){
+    QuadtreeStruct* quadtree = (QuadtreeStruct*) qt;
+    double *x = (double*)malloc(sizeof(double));
+    *x = 0;
+    desenhaNosQt(quadtree, quadtree->root, svg, x, dy, NULL);
+    free(x);
 }

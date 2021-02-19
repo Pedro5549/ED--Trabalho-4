@@ -48,7 +48,7 @@ void swapPonto(Ponto p1, Ponto p2){
     *b = temp;
 }
 
-void atribuirPonto(Ponto *p1, Ponto *p2){  
+void atribuirPonto(Ponto p1, Ponto p2){  
     PontoStruct* a = (PontoStruct*) p1;
     PontoStruct* b = (PontoStruct*) p2;
     *a = *b;  

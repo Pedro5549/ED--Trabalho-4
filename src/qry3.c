@@ -10,6 +10,7 @@
 #include "sorts.h"
 #include "ponto.h"
 #include "circulo.h"
+#include "tabelaEspalhamento.h"
 
 void cv(QuadTree qt[11], int n, char cep[], char face, int num){
     Info fig;
@@ -100,7 +101,7 @@ void soc(FILE* svg, FILE* txt, QuadTree qt[11], int k, char cep[], char face, in
     removeList(l,NULL);
 }
 
-void ci(FILE* svg, FILE* txt, QuadTree qt[11], double x, double y, double r, Lista extraFig){
+void ci(FILE* svg, FILE* txt, QuadTree qt[11], HashTable ht[4], double x, double y, double r, Lista extraFig){
     No node;
     Info fig;
     int n = 0;
@@ -118,13 +119,13 @@ void ci(FILE* svg, FILE* txt, QuadTree qt[11], double x, double y, double r, Lis
         printf("Não foi encontrado casos na região\n");
         return;
     }
-    node = getNodeByIdQt(qt[0],getCEPCaso(getInfoQt(qt[8],getInfo(getFirst(aux)))));
-    if (node == NULL){
+    c = getValor(ht[3],getCEPCaso(getInfoQt(qt[8],getInfo(getFirst(aux)))));
+    if (c == NULL){
         removeList(aux,NULL);
         printf("Densidade não informada na região\n");
         return;
     }
-    d = getDensidade(getInfoQt(qt[0], node));
+    d = getDensidade(c);
     Lista l = createList();
     for(node = getFirst(aux); node != NULL; node = getNext(node)){
         fig = getInfoQt(qt[8], getInfo(node));

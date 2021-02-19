@@ -242,12 +242,12 @@ void qry(QuadTree qt[11], HashTable ht[4], char path[], char nomeSaida[]){
         else if(strcmp(tipo,"ci") == 0){
             fscanf(consulta,"%lf %lf %lf", &x, &y, &h);
             fprintf(saida,"%s %lf %lf %lf\n",tipo, x, y, h);
-            ci(svg,saida,qt,x,y,h,extraFig);
+            ci(svg,saida,qt,ht,x,y,h,extraFig);
         }
         else if(strcmp(tipo, "m?") == 0){
             fscanf(consulta, "%s", cepid);
             fprintf(saida, "%s %s\n", tipo, cepid);
-            // comando m?
+            moradores(saida, qt, ht, cepid);
         }
         else if(strcmp(tipo, "dm?") == 0){
             fscanf(consulta, "%s", cpf);
@@ -265,7 +265,9 @@ void qry(QuadTree qt[11], HashTable ht[4], char path[], char nomeSaida[]){
             mud(svg, saida, qt, ht, cpf, cepid, face, i, aux, extraFig);
         }
         else if(strcmp(tipo, "dmprbt") == 0) {
-            // ???
+            fscanf(consulta, " %c %s", &face, cepid);
+            fprintf(saida, "%s %c %s\n", tipo, face, cepid);
+            dmprbt(qt, face, nomeSaida, cepid);
         }
         else if(strcmp(tipo, "eplg?") == 0) {
             fscanf(consulta, "%s", aux);
@@ -349,9 +351,12 @@ void pm(QuadTree qt[11], HashTable ht[4], char pmArq[]) {
             adicionaItem(ht[2], cpf, info);
         } else if(strcmp(tipo, "m") == 0) {
             fscanf(pmFile, "%s %s %c %d %s", cpf, cep, &face, &num, compl);
-            info = createEndereco(getValor(ht[3], cep), cpf, face, num, compl);
-            listInsert(info, list[0]);
-            listInsert(info, list[1]);
+            info = getValor(ht[3], cep);
+            if (info != NULL){
+                info = createEndereco(info, cpf, face, num, compl);
+                listInsert(info, list[0]);
+                listInsert(info, list[1]);
+            }
         }
     }
 
@@ -451,10 +456,6 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
         free(saidaQry);
         free(qryArq); 
     }
-    /*for (i = 0; i < 4; i++) {
-        imprimeTabela(ht[i]);
-        printf("\n------------------------------------\n");
-    } */
     free(geoArq);
     free(saida);
     free(saidaGeo);

@@ -18,7 +18,7 @@ void desenharPonto(Ponto pont, FILE* svg);
 
 void swapPonto(Ponto p1, Ponto p2);
 
-void atribuirPonto(Ponto *p1, Ponto *p2);
+void atribuirPonto(Ponto p1, Ponto p2);
 
 double getPontoDist(Ponto pont, double x, double y);
 

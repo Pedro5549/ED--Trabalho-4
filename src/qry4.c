@@ -9,6 +9,26 @@
 #include "endereco.h"
 #include "pessoa.h"
 #include "Estabelecimento.h"
+#include "quadra.h"
+#include "svg.h"
+
+void moradores(FILE *txt, QuadTree qt[11], HashTable ht[4], char cep[]){
+    Quadra q = getValor(ht[3], cep);
+    if(q == NULL){
+        fprintf(txt,"Quadra não existe\n");
+        return;
+    }
+    double x = getX(getPontoQuad(q));
+    double y = getY(getPontoQuad(q));
+    Lista l = nosDentroRetanguloQt(qt[10], x, y, x + getWQuad(q), y + getHQuad(q));
+    for(No node = getFirst(l); node != NULL; node = getNext(node)){
+        Endereco e = getInfoQt(qt[10], getInfo(node));
+        Pessoa p = getValor(ht[2], getCpfEndereco(e));
+        fprintf(txt,"Informações pessoais:\nCpf : %s, Nome : %s, Sobrenome : %s, sexo : %c, data de nascimento : %s\n", getCpf(p), getNome(p), getSobrenome(p), getSexo(p), getDataNascimento(p));
+        fprintf(txt, "Endereço:\nCEP : %s, face : %c, número: %d, complemento: %s\n\n", cep, getFaceEndereco(e), getNumEndereco(e), getComplementoEndereco(e));
+    }
+    removeList(l, NULL);
+}
 
 void dm(FILE *svg, FILE *txt, HashTable ht[4], char pcpf[], Lista extraFig) {
     char cpf[15], nome[30], sobrenome[30], sexo, nasc[11];
@@ -106,4 +126,31 @@ void mud(FILE *svg, FILE *txt, QuadTree qt[11], HashTable ht[4], char cpf[], cha
     *tamanho = getTamanho(extraFig);
     listInsert(tamanho, extraFig);
     fprintf(svg, "\t<circle id=\"%d\" cx=\"%lf\" cy=\"%lf\" r=\"5\" fill=\"blue\" stroke=\"white\" stroke-width=\"3\" />\n", *tamanho, getX(p), getY(p));
+}
+
+void dmprbt(QuadTree qt[11], char t, char saida[], char sfx[]){
+    int i;
+    switch(t) {
+    case 'q':
+        i = 0;
+        break;
+    case 'h':
+        i = 1;
+        break;
+    case 's':
+        i = 2;
+        break;
+    case 't':
+        i = 3;
+        break;
+    default:
+        printf("Valor inválido (%c)\n", t);
+        return;
+    }
+    char* pathSvg = malloc((6 + strlen(sfx) + strlen(saida))*sizeof(char));
+    sprintf(pathSvg,"%s-%s.svg",saida,sfx);
+    FILE* svg = iniciarSvg(pathSvg);
+    desenharQt(qt[i], svg);
+    fecharSvg(svg);
+    free(pathSvg);
 }

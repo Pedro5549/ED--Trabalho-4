@@ -5,7 +5,7 @@
 
 /************************************************/
 /*                  CONSULTAS                   */
-/*                0: cpf x cep                  */
+/*                0: cpf x endereço             */
 /*                1: codt x descricao           */
 /*                2: cpf x pessoa               */
 /*                3: cep x quadra               */

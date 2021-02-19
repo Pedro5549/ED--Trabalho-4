@@ -23,7 +23,7 @@ int getNumeroCaso(CasosCovid caso);
 int getNCasos(CasosCovid caso);
 //Retorna o numero de casos de covid da struct
 
-void swapCasos(CasosCovid *a, CasosCovid *b);
+void swapCasos(CasosCovid c1, CasosCovid c2);
 //troca o valor de dois ponteiros CasosCovid
 
 void desenharCasos(CasosCovid caso, FILE* svg);

@@ -35,7 +35,7 @@ void desenharSvg(FILE* svg, QuadTree tree[11], Lista l){
     No node;
     void (*desenhar[9])(void*, FILE*) = {desenharQuadra, desenharIU, desenharIU, desenharIU, desenharCirculo, desenharRetangulo, desenharTexto, desenharPonto,  desenharCasos};
     for(int i = 0; i < 9; i++){
-        percorreLarguraQt(tree[i],desenhar[i],svg);
+        percorreLarguraQt(tree[i],(void (*)(void *, void *))desenhar[i],svg);
     }
     if(l != NULL){
         for(node = getFirst(l); node != NULL; node = getNext(node)){
