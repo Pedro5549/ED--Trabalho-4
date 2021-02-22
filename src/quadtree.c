@@ -65,23 +65,23 @@ void insere(QuadtreeStruct* quadtree, NodeStruct* node){
                 }
             }
             else{
-                if(aux->children[nw] == NULL){
-                    aux->children[nw] = node;
-                    node->parent = aux;
-                }
-                else{
-                    aux = aux->children[nw];
-                }
-            }
-        }
-        else{
-            if(getY(p) >= getY(pAux)){
                 if(aux->children[se] == NULL){
                     aux->children[se] = node;
                     node->parent = aux;
                 }
                 else{
                     aux = aux->children[se];
+                }
+            }
+        }
+        else{
+            if(getY(p) >= getY(pAux)){
+                if(aux->children[nw] == NULL){
+                    aux->children[nw] = node;
+                    node->parent = aux;
+                }
+                else{
+                    aux = aux->children[nw];
                 }
             }
             else{
@@ -330,12 +330,12 @@ QtNo getNoQt(QuadTree qt, double x, double y){
                 aux = aux->children[ne];
             }
             else{
-                aux = aux->children[nw];
+                aux = aux->children[se];
             }
         }
         else{
             if(y > getY(p)){
-                aux = aux->children[se];
+                aux = aux->children[nw];
             }
             else{
                 aux = aux->children[sw];

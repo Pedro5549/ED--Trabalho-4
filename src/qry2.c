@@ -32,8 +32,12 @@ void dq(FILE *svg, FILE *txt, QuadTree quadtrees[11], int flag, char id[], doubl
         fprintf(txt, "Torre de radio:\n");
         break;
     }
-    
-    info = getInfoQt(quadtrees[i], getNodeByIdQt(quadtrees[i], id));
+    info = getNodeByIdQt(quadtrees[i], id);
+    if (info == NULL){
+        printf("Instrumento urbano não deletado\n");
+        return;
+    }
+    info = getInfoQt(quadtrees[i], info);
     p = getPontoIU(info);
     x = getX(p);
     y = getY(p);

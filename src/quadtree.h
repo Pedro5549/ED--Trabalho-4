@@ -117,8 +117,11 @@ QtInfo getInfoQt(QuadTree qt, QtNo pNo);
  */
 
 QtNo getNodeByIdQt(QuadTree qt, char* chave);
-// Retorna a informação armazenada na árvore associada a chave
-
+/*
+* Retorna a informação armazenada na árvore associada a chave
+* Entrada: quadtree e chave
+* Saida: nó da quadtree
+*/
 void desalocaQt(QuadTree qt);
 /**
     Libera memória alocada pela implementação da árvore. Desaloca apenas memória alocada por criaQt()) e os
@@ -130,6 +133,10 @@ void desalocaQt(QuadTree qt);
  */
 
 void desenharQt(QuadTree qt, FILE* svg);
-//Desenha a quadtree em um arquivo svg
+/*
+* Desenha a quadtree em um arquivo svg
+* Entrada: quadtree e arquivo svg
+* Saida: void
+*/
 
 #endif // QUADTREE_H_INCLUDED

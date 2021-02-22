@@ -20,9 +20,12 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info));
 //obtem a envoltoria convexa de uma lista de endereços
 
 void shellSort(Lista list, double x, double y);
+//ordena uma lista pelo algoritmo shellsort
 
 Info getIndexInfo(Lista list, int i);
+//retorna a informação contida no nó de index i na lista list
 
 void balancearQuadTree(QuadTree qt, Lista l, void* (*getPonto)(void*), void (*swap)(void*, void*));
+//adiciona os elementos da lista l na quadtree qt, utilizando o algoritmo da envoltória convexa para gerar uma quadtree balanceada 
 
 #endif

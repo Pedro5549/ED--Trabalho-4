@@ -257,7 +257,7 @@ void qry(QuadTree qt[11], HashTable ht[4], char path[], char nomeSaida[]){
         else if(strcmp(tipo, "de?") == 0) {
             fscanf(consulta, "%s", aux);
             fprintf(saida, "%s %s\n", tipo, aux);
-            de(saida, qt, aux);
+            de(saida, qt, ht, aux);
         }
         else if(strcmp(tipo, "mud") == 0) {
             fscanf(consulta, "%s %s %c %d %s", cpf, cepid, &face, &i, aux);
