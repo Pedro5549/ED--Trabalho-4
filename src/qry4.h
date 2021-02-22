@@ -15,4 +15,8 @@ void mud(FILE *svg, FILE *txt, QuadTree qt[11], HashTable ht[4], char cpf[], cha
 
 void dmprbt(QuadTree qt[11], char t, char saida[], char sfx[]);
 
+void eplg(FILE *svg, FILE *txt, QuadTree qt[11], HashTable ht[4], char tipo[], double x, double y, double w, double h, Lista extraFig);
+
+void catac(FILE *svg, FILE *txt, QuadTree qt[11], HashTable ht[4], double x, double y, double r, Lista extraFig);
+
 #endif

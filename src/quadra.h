@@ -47,7 +47,7 @@ char* getCorpQuad(Quadra quadra);
 void setCorpQuad(Quadra quadra, char corp[]);
 // atualiza o valor da cor de preenchimento da quadra
 
-int getDensidade(Quadra quadra);
+double getDensidade(Quadra quadra);
 // retorna o valor da densidade da quadra
 
 void setDensidade(Quadra quadra, double densidade);

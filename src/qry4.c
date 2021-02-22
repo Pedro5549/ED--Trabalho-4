@@ -11,6 +11,8 @@
 #include "Estabelecimento.h"
 #include "quadra.h"
 #include "svg.h"
+#include "verificacao.h"
+#include "instrumentoUrbano.h"
 
 void moradores(FILE *txt, QuadTree qt[11], HashTable ht[4], char cep[]){
     Quadra q = getValor(ht[3], cep);
@@ -103,7 +105,7 @@ void mud(FILE *svg, FILE *txt, QuadTree qt[11], HashTable ht[4], char cpf[], cha
     fprintf(txt, "Endereço antigo:\nCep: %s; Face: %c; Num: %d; Complemento: %s\n", getCepEndereco(end), getFaceEndereco(end), getNumEndereco(end), getComplementoEndereco(end));
     fprintf(txt, "Endereço novo:\nCep: %s; Face: %c; Num: %d; Complemento: %s\n", cep, face, num, compl);
 
-    aux = getNodeByIdQt(qt[10], cep);
+    aux = getNodeByIdQt(qt[10], cpf);
     deletaItem(ht[0], cpf, 0);
     end = removeNoQt(qt[10], aux);
     desalocarEndereco(end);
@@ -153,4 +155,121 @@ void dmprbt(QuadTree qt[11], char t, char saida[], char sfx[]){
     desenharQt(qt[i], svg);
     fecharSvg(svg);
     free(pathSvg);
+}
+
+void eplg(FILE *svg, FILE *txt, QuadTree qt[11], HashTable ht[4], char tipo[], double x, double y, double w, double h, Lista extraFig) {
+    Info est, pes;
+    Ponto p;
+    No node;
+    QtNo info;
+    Lista l;
+    int *tamanho;
+
+    l = nosDentroRetanguloQt(qt[9], x, y, x + w, y + h);
+
+    if (tipo != NULL) {
+        for (node = getFirst(l); node != NULL; node = getNext(node)) {
+            est = getInfo(node);
+            info = getInfoQt(qt[9], est);
+            p = getPontoEstabelecimento(info);
+            if (strcmp(tipo, getCodtEstabelecimento(info)) == 0) {
+                pes = getValor(ht[2], getCpfEstabelecimento(info));
+                tamanho = (int*) malloc(sizeof(int));
+                *tamanho = getTamanho(extraFig);
+                listInsert(tamanho, extraFig);
+                fprintf(txt, "Nome completo: %s %s; Nome estabelecimento: %s; Cnpj: %s; Cep: %s; Codt: %s; Face: %c; Numero: %d\n", getNome(pes), getSobrenome(pes), getNomeEstabelecimento(info), getCnpjEstabelecimento(info), getCepEstabelecimento(info), getCodtEstabelecimento(info), getFaceEstabelecimento(info), getNumEstabelecimento(info));
+                fprintf(svg, "\t<circle id=\"%d\" cx=\"%lf\" cy=\"%lf\" r=\"5\" stroke=\"black\" stroke-width=\"2\" fill=\"green\" />\n", *tamanho, getX(p), getY(p));
+            }
+        }
+    } else {
+        for (node = getFirst(l); node != NULL; node = getNext(node)) {
+            est = getInfo(node);
+            info = getInfoQt(qt[9], est);
+            p = getPontoEstabelecimento(info);
+            pes = getValor(ht[2], getCpfEstabelecimento(info));
+
+            tamanho = (int*) malloc(sizeof(int));
+            *tamanho = getTamanho(extraFig);
+            listInsert(tamanho, extraFig);
+
+            fprintf(txt, "Nome completo: %s %s; Nome estabelecimento: %s; Cnpj: %s; Cep: %s; Codt: %s; Face: %c; Numero: %d\n", getNome(pes), getSobrenome(pes), getNomeEstabelecimento(info), getCnpjEstabelecimento(info), getCepEstabelecimento(info), getCodtEstabelecimento(info), getFaceEstabelecimento(info), getNumEstabelecimento(info));
+            fprintf(svg, "\t<circle id=\"%d\" cx=\"%lf\" cy=\"%lf\" r=\"5\" stroke=\"black\" stroke-width=\"2\" fill=\"green\" />\n", *tamanho, getX(p), getY(p));
+        }
+    }
+
+    removeList(l, NULL);
+}
+
+void catac(FILE *svg, FILE *txt, QuadTree qt[11], HashTable ht[4], double x, double y, double r, Lista extraFig) {
+    Info aux;
+    QtNo info;
+    No node;
+    Ponto p;
+    Lista l;
+
+    l = nosDentroCirculoQt(qt[0], x, y, r);
+    fprintf(txt, "Quadras:\n");
+    for (node = getFirst(l); node != NULL; node = getNext(node)) {
+        aux = getInfo(node);
+        info = getInfoQt(qt[0], aux);
+        p = getPontoQuad(info);
+        if (retInternoCirc(getX(p), getY(p), getWQuad(info), getHQuad(info), x, y, r)) {
+            fprintf(txt, "Cep: %s; x=%lf; y=%lf; w=%lf; h=%lf; espessura: %s; corb: %s; corp: %s; densidade: %lf\n", getCEP(info), getX(p), getY(p), getWQuad(info), getHQuad(info), getEspessuraQuad(info), getCorbQuad(info), getCorpQuad(info), getDensidade(info));
+            deletaItem(ht[3], getCEP(info), 0);
+            info = removeNoQt(qt[0], aux);
+            desalocaQuadra(info);
+        }
+    }
+
+    removeList(l, NULL);
+    for (int i = 1; i < 4; i++) {
+        l = nosDentroCirculoQt(qt[i], x, y, r);
+        if (i == 1)
+            fprintf(txt, "Hidrantes:\n");
+        else if (i == 2)
+            fprintf(txt, "Semáforo:\n");
+        else
+            fprintf(txt, "Torre de rádio:\n");
+
+        for (node = getFirst(l); node != NULL; node = getNext(node)) {
+            aux = getInfo(node);
+            info = getInfoQt(qt[i], aux);
+            p = getPontoIU(info);
+            fprintf(txt, "Id: %s; x=%lf; y=%lf; Espessura: %s; corb: %s; corp: %s\n", getIdIU(info), getX(p), getY(p), getEspessuraIU(info), getCorbIU(info), getCorpIU(info));
+            info = removeNoQt(qt[i], aux);
+            desalocaIU(info);
+        }
+
+        removeList(l, NULL);
+    }
+
+    l = nosDentroCirculoQt(qt[10], x, y, r);
+    fprintf(txt, "Moradores:\n");
+    for (node = getFirst(l); node != NULL; node = getNext(node)) {
+        aux = getInfo(node);
+        info = getInfoQt(qt[10], aux);
+        p = getPontoEndereco(info);
+        fprintf(txt, "Cpf: %s; Cep: %s; x=%lf; y=%lf; Complemento: %s; Face: %c; Numero: %d\n", getCpfEndereco(info), getCepEndereco(info), getX(p), getY(p), getComplementoEndereco(info), getFaceEndereco(info), getNumEndereco(info));
+        deletaItem(ht[2], getCpfEndereco(info), 1);
+        info = removeNoQt(qt[10], aux);
+        desalocarEndereco(info);
+    }
+
+    removeList(l, NULL);
+    l = nosDentroCirculoQt(qt[9], x, y, r);
+    fprintf(txt, "Estabelecimentos:\n");
+    for (node = getFirst(l); node != NULL; node = getNext(node)) {
+        aux = getInfo(node);
+        info = getInfoQt(qt[9], aux);
+        p = getPontoEstabelecimento(info);
+        fprintf(txt, "Nome: %s; Cpf: %s; Cnpj: %s; Cep: %s; x=%lf; y=%lf; Face: %c; Numero: %d\n", getNomeEstabelecimento(info), getCpfEstabelecimento(info), getCnpjEstabelecimento(info), getCepEstabelecimento(info), getX(p), getY(p), getFaceEstabelecimento(info), getNumEstabelecimento(info));
+        info = removeNoQt(qt[9], aux);
+        desalocarEstabelecimento(info);
+    }
+
+    removeList(l, NULL);
+    int *tamanho = (int*) malloc(sizeof(int));
+    *tamanho = getTamanho(extraFig);
+    listInsert(tamanho, extraFig);
+    fprintf(svg, "\t<circle id=\"%d\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" opacity=\"0.5\" stroke=\"#6C6753\" fill=\"#CCFF00\" />\n", *tamanho, x, y, r);
 }

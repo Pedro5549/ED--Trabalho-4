@@ -93,7 +93,7 @@ void setCorpQuad(Quadra quadra, char corp[]){
     strcpy(quad->corp,corp);
 }
 
-int getDensidade(Quadra quadra){
+double getDensidade(Quadra quadra){
     QuadraStruct* quad = (QuadraStruct*) quadra;
     return quad->densidade;
 }

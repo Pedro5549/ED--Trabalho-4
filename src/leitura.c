@@ -272,20 +272,19 @@ void qry(QuadTree qt[11], HashTable ht[4], char path[], char nomeSaida[]){
         else if(strcmp(tipo, "eplg?") == 0) {
             fscanf(consulta, "%s", aux);
             if(strcmp(aux, "*") == 0) {
-                i = 1;
                 fscanf(consulta, "%lf %lf %lf %lf", &x, &y, &w, &h);
                 fprintf(saida, "%s * %lf %lf %lf %lf\n", tipo, x, y, w, h);
+                eplg(svg, saida, qt, ht, NULL, x, y, w, h, extraFig);
             } else {
-                i = 0;
                 fscanf(consulta, "%lf %lf %lf %lf", &x, &y, &w, &h);
                 fprintf(saida, "%s %s %lf %lf %lf %lf\n", tipo, aux, x, y, w, h);
+                eplg(svg, saida, qt, ht, aux, x, y, w, h, extraFig);
             }
-            //eplg();
         }
         else if(strcmp(tipo, "catac") == 0) {
             fscanf(consulta, "%lf %lf %lf", &x, &y, &w);
             fprintf(saida, "%s %lf %lf %lf\n", tipo, x, y, w);
-            //catac();
+            catac(svg, saida, qt, ht,x, y, w, extraFig);
         }
     }
     desenharSvg(svg,qt,extraFig);
@@ -430,7 +429,7 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     }
     saidaGeo = (char*)malloc((strlen(saida) + 5)*sizeof(char));
     sprintf(saidaGeo,"%s.svg",saida);
-    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, getCEPCaso, getCnpjEstabelecimento, getCepEndereco};
+    char* (*getId[11])(void*) = {getCEP, getIdIU, getIdIU, getIdIU, getIdCirc, getIdRet, getIdTxt, NULL, getCEPCaso, getCnpjEstabelecimento, getCpfEndereco};
     QuadTree trees[11];
     for(i = 0; i < 11; i++){
         trees[i] = criaQt(getId[i]);
