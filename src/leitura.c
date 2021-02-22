@@ -385,22 +385,34 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
         if(path[strlen(path) - 1] != '/'){
             geoArq = (char *)malloc((strlen(paramGeo)+strlen(path)+2)*sizeof(char));
     	    sprintf(geoArq,"%s/%s",path,paramGeo);
+            if (paramQry != NULL){
+                qryArq = (char *)malloc((strlen(paramQry)+strlen(path)+2)*sizeof(char));
+                sprintf(qryArq,"%s/%s",path,paramQry);
+            }
+            if (paramEc != NULL){
+                ecArq = (char *)malloc((strlen(paramEc)+strlen(path)+2)*sizeof(char));
+                sprintf(ecArq,"%s/%s",path,paramEc);
+            }
+            if (paramPm != NULL){
+                pmArq = (char *)malloc((strlen(paramPm)+strlen(path)+2)*sizeof(char));
+                sprintf(pmArq,"%s/%s",path,paramPm);
+            }
         }
 		else{
             geoArq = (char *)malloc((strlen(paramGeo)+strlen(path)+1)*sizeof(char));
     	    sprintf(geoArq,"%s%s",path,paramGeo);
-        }
-        if (paramQry != NULL){
-            qryArq = (char *)malloc((strlen(paramQry)+strlen(path)+2)*sizeof(char));
-            sprintf(qryArq,"%s/%s",path,paramQry);
-        }
-        if (paramEc != NULL){
-            ecArq = (char *)malloc((strlen(paramEc)+strlen(path)+2)*sizeof(char));
-            sprintf(ecArq,"%s/%s",path,paramEc);
-        }
-        if (paramPm != NULL){
-            pmArq = (char *)malloc((strlen(paramPm)+strlen(path)+2)*sizeof(char));
-            sprintf(pmArq,"%s/%s",path,paramPm);
+            if (paramQry != NULL){
+                qryArq = (char *)malloc((strlen(paramQry)+strlen(path)+1)*sizeof(char));
+                sprintf(qryArq,"%s%s",path,paramQry);
+            }
+            if (paramEc != NULL){
+                ecArq = (char *)malloc((strlen(paramEc)+strlen(path)+1)*sizeof(char));
+                sprintf(ecArq,"%s%s",path,paramEc);
+            }
+            if (paramPm != NULL){
+                pmArq = (char *)malloc((strlen(paramPm)+strlen(path)+1)*sizeof(char));
+                sprintf(pmArq,"%s%s",path,paramPm);
+            }
         }
 	} else {
 		geoArq = (char *)malloc((strlen(paramGeo)+1)*sizeof(char));
@@ -449,7 +461,7 @@ void tratamento(char path[], char outPath[], char paramGeo[], char paramQry[], c
     }
     if (paramQry != NULL){
         nomeQry = obterNomeArquivo(paramQry);
-        saidaQry = (char*)malloc((strlen(outPath) + strlen(saida) + 2)*sizeof(char));
+        saidaQry = (char*)malloc((strlen(nomeQry) + strlen(saida) + 2)*sizeof(char));
         sprintf(saidaQry,"%s-%s",saida,nomeQry);
         qry(trees, ht, qryArq, saidaQry);
         free(saidaQry);
