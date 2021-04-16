@@ -10,11 +10,11 @@
 #include "quadra.h"
 
 int orientacao(Ponto a, Ponto b, Ponto c){
-    double area = (getX(c) - getX(b)) * (getY(b) - getY(a)) - (getY(c) - getY(b)) * (getX(b) - getX(a));
-    if(area > 1){
+    double area = (getX(b) - getX(a)) * (getY(c) - getY(a)) - (getY(b) - getY(a)) * (getX(c) - getX(a));
+    if(area < 0){
         return -1; //horario
     }
-    if(area < 1){
+    if(area > 0){
         return 1; //anti-horario
     }
     return 0; //colinear
@@ -86,6 +86,7 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
     listInsert(getInfo(getLast(list)), lAux);
     int j = getTamanho(lAux);
     if (j < 3){
+        removeList(lAux, NULL);
         return NULL;
     }
     Lista envConv = createList();
@@ -93,7 +94,7 @@ Lista convexHull(Lista list, Ponto (*getPonto)(Info), void (*swap)(Info, Info)){
         listInsert(getPonto(getInfo(i)), envConv);
     }
     while(i != NULL){
-        while (orientacao(getInfo(getPrevious(getLast(envConv))), getInfo(getLast(envConv)), getPonto(getInfo(i))) != 1){
+        while (getTamanho(envConv) > 1 && orientacao(getInfo(getPrevious(getLast(envConv))), getInfo(getLast(envConv)), getPonto(getInfo(i))) != 1){
             removeNode(envConv,getLast(envConv), NULL);
         }
         listInsert(getPonto(getInfo(i)), envConv);
@@ -163,6 +164,9 @@ void balancearQuadTree(QuadTree qt, Lista l, Ponto (*getPonto)(void*), void (*sw
                 }
             }
             removeList(envCov,NULL);
+        }
+        else{
+            break;
         }
     }while (getTamanho(l) > 3);
     for(i = getFirst(l); i != NULL; i = getNext(i)){
